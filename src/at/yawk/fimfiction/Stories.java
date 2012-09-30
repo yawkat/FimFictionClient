@@ -5,6 +5,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+
 public final class Stories {
 	private Stories() {
 		
@@ -26,5 +30,10 @@ public final class Stories {
 			throw new NullPointerException("Unknown download type: "+downloadType);
 		}
 		Util.copyStream(Util.getURLInputStream(new URL(inputUrl)), output);
+	}
+	
+	public static void updateStory(final Story s) {
+		//final Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		
 	}
 }
