@@ -88,6 +88,10 @@ public class Searches {
 	}
 	
 	public static String getSearchRequestArguments(String searchTerm, EnumSearchOrder order, EnumMap<EnumCategory, Boolean> categories, EnumStoryContentRating contentRating, EnumStoryMatureCategories matureCategories, boolean completed, Integer minimumWords, Integer maximumWords, EnumMap<EnumCharacter, Boolean> characters) {
+		return getSearchRequestArguments(searchTerm, order, categories, contentRating, matureCategories, completed, minimumWords, maximumWords, characters, false, false);
+	}
+	
+	public static String getSearchRequestArguments(String searchTerm, EnumSearchOrder order, EnumMap<EnumCategory, Boolean> categories, EnumStoryContentRating contentRating, EnumStoryMatureCategories matureCategories, boolean completed, Integer minimumWords, Integer maximumWords, EnumMap<EnumCharacter, Boolean> characters, boolean unread, boolean tracking) {
 		final Map<String, String> m = new HashMap<String, String>();
 		m.put("view", "category");
 		m.put("search", searchTerm);
@@ -102,11 +106,17 @@ public class Searches {
 			m.put("completed", "1");
 		m.put("minimum_words", minimumWords == null ? "" : minimumWords.toString());
 		m.put("maximum_words", maximumWords == null ? "" : maximumWords.toString());
+		if(unread)
+			m.put("unread", null);
+		if(tracking)
+			m.put("tracking", null);
 		final StringBuilder sb = new StringBuilder();
 		for(final Entry<String, String> e : m.entrySet()) {
 			sb.append(e.getKey());
-			sb.append('=');
-			sb.append(e.getValue());
+			if(e.getValue() != null) {
+				sb.append('=');
+				sb.append(e.getValue());
+			}
 			sb.append('&');
 		}
 		for(final EnumCharacter ec : EnumCharacter.values()) {
