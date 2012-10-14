@@ -12,14 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Searches {
-	public static Story[] parseSearch(final String html) {
-		final Document d = Jsoup.parse(html);
+	public static Story[] parseSearch(final Document d) {
 		final Elements es = d.getElementsByClass("content_box");
 		final List<Story> l = new ArrayList<Story>(10);
 		for(final Element e : es) {
@@ -79,7 +77,7 @@ public class Searches {
 			
 			private void loadNext() {
 				try {
-					final Story[] as = parseSearch(Util.readFully(ffc.getConnection(new URL(url + "&page=" + ++i)).getInputStream()));
+					final Story[] as = parseSearch(Util.getHTML(ffc.getConnection(new URL(url + "&page=" + ++i))));
 					hasMorePages = as.length >= 10;
 					cache = Arrays.asList(as).iterator();
 				} catch(IOException e) {

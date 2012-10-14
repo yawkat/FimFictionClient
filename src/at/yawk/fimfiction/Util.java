@@ -3,7 +3,6 @@ package at.yawk.fimfiction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
 
@@ -26,16 +25,6 @@ public final class Util {
 			out.write(buffer, 0, length);
 	}
 	
-	/**
-	 * Using this in case I need to add a custom user agent or cookies at some
-	 * point
-	 * 
-	 * @throws IOException
-	 */
-	public static InputStream getURLInputStream(final URL url, final IFimFictionConnection ffc) throws IOException {
-		return ffc.getConnection(url).getInputStream();
-	}
-	
 	public static Document getHTML(final URLConnection urlc) throws IOException {
 		return Jsoup.parse(readFully(urlc.getInputStream()), urlc.getURL().toString());
 	}
@@ -49,5 +38,9 @@ public final class Util {
 		} finally {
 			s.close();
 		}
+	}
+	
+	public static void clearStream(final InputStream is) throws IOException {
+		while(is.read() >= 0);
 	}
 }

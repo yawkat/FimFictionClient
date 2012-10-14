@@ -31,7 +31,7 @@ public final class Stories {
 		default:
 			throw new NullPointerException("Unknown download type: " + downloadType);
 		}
-		Util.copyStream(Util.getURLInputStream(new URL(inputUrl), ffc), output);
+		Util.copyStream(ffc.getConnection(new URL(inputUrl)).getInputStream(), output);
 	}
 	
 	public static void updateStory(final Story s, IFimFictionConnection ffc) throws MalformedURLException, IOException, JSONException {
