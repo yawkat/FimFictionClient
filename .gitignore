@@ -1,4 +1,6 @@
-test/
+stories/
+all.log
+stories.xml
 
 
 #################
