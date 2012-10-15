@@ -5,13 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -85,49 +80,5 @@ public class Searches {
 				}
 			}
 		};
-	}
-	
-	public static String getSearchRequestArguments(String searchTerm, EnumSearchOrder order, EnumMap<EnumCategory, Boolean> categories, EnumStoryContentRating contentRating, EnumStoryMatureCategories matureCategories, boolean completed, Integer minimumWords, Integer maximumWords, EnumMap<EnumCharacter, Boolean> characters) {
-		return getSearchRequestArguments(searchTerm, order, categories, contentRating, matureCategories, completed, minimumWords, maximumWords, characters, false, false);
-	}
-	
-	public static String getSearchRequestArguments(String searchTerm, EnumSearchOrder order, EnumMap<EnumCategory, Boolean> categories, EnumStoryContentRating contentRating, EnumStoryMatureCategories matureCategories, boolean completed, Integer minimumWords, Integer maximumWords, EnumMap<EnumCharacter, Boolean> characters, boolean unread, boolean tracking) {
-		final Map<String, String> m = new HashMap<String, String>();
-		m.put("view", "category");
-		m.put("search", searchTerm);
-		m.put("order", order.getSearchValue());
-		for(final EnumCategory ec : EnumCategory.values()) {
-			final Boolean b = categories.get(ec);
-			m.put(ec.getSearchValue(), b == null ? "" : b.booleanValue() ? "1" : "2");
-		}
-		m.put("content_rating", Integer.toString(contentRating.getSearchId()));
-		m.put("mature_categories", Integer.toString(matureCategories.getSearchId()));
-		if(completed)
-			m.put("completed", "1");
-		m.put("minimum_words", minimumWords == null ? "" : minimumWords.toString());
-		m.put("maximum_words", maximumWords == null ? "" : maximumWords.toString());
-		if(unread)
-			m.put("unread", null);
-		if(tracking)
-			m.put("tracking", null);
-		final StringBuilder sb = new StringBuilder();
-		for(final Entry<String, String> e : m.entrySet()) {
-			sb.append(e.getKey());
-			if(e.getValue() != null) {
-				sb.append('=');
-				sb.append(e.getValue());
-			}
-			sb.append('&');
-		}
-		for(final EnumCharacter ec : EnumCharacter.values()) {
-			final Boolean b = characters.get(ec);
-			if(b != null) {
-				sb.append(b.booleanValue() ? "characters[]" : "characters_execluded[]");
-				sb.append('=');
-				sb.append(ec.getId());
-				sb.append('&');
-			}
-		}
-		return sb.toString().substring(0, sb.length() - 1);
 	}
 }

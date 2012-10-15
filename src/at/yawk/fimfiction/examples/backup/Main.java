@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,14 +45,11 @@ import org.json.JSONException;
 
 import com.thoughtworks.xstream.XStream;
 
-import at.yawk.fimfiction.EnumCategory;
-import at.yawk.fimfiction.EnumCharacter;
 import at.yawk.fimfiction.EnumDownloadType;
 import at.yawk.fimfiction.EnumSearchOrder;
-import at.yawk.fimfiction.EnumStoryContentRating;
-import at.yawk.fimfiction.EnumStoryMatureCategories;
 import at.yawk.fimfiction.FimFictionConnectionStandard;
 import at.yawk.fimfiction.IFimFictionConnection;
+import at.yawk.fimfiction.SearchRequestBuilder;
 import at.yawk.fimfiction.Searches;
 import at.yawk.fimfiction.Stories;
 import at.yawk.fimfiction.Story;
@@ -63,7 +59,7 @@ import at.yawk.fimfiction.XMLHelper;
 public class Main implements Runnable {
 	private final Map<Integer, Story>	allStories		= Collections.synchronizedMap(new HashMap<Integer, Story>(100));
 	private final IFimFictionConnection	ffc				= new FimFictionConnectionStandard();
-	private final File					rootDir			= new File(".");
+	final static File					rootDir			= new File(".");
 	private final XStream				xs				= XMLHelper.getXStreamInstance();
 	private final Logger				logger			= Logger.getAnonymousLogger();
 	private final static String			LINE_SEPARATOR	= System.getProperty("line.separator");
@@ -165,7 +161,7 @@ public class Main implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				final String search = Util.FIMFICTION + "index.php?" + Searches.getSearchRequestArguments("", EnumSearchOrder.UPDATE_DATE, new EnumMap<EnumCategory, Boolean>(EnumCategory.class), EnumStoryContentRating.ALL, EnumStoryMatureCategories.ALL, false, null, null, new EnumMap<EnumCharacter, Boolean>(EnumCharacter.class));
+				final String search = Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.RATING).getRequest();
 				while(true) {
 					try {
 						final Iterator<Story> i = Searches.parseFullSearchPartially(search, ffc, 0);
@@ -234,7 +230,7 @@ public class Main implements Runnable {
 			@Override
 			public void run() {
 				boolean isFirstRun = true;
-				final String search = Util.FIMFICTION + "index.php?" + Searches.getSearchRequestArguments("", EnumSearchOrder.FIRST_POSTED_DATE, new EnumMap<EnumCategory, Boolean>(EnumCategory.class), EnumStoryContentRating.ALL, EnumStoryMatureCategories.ALL, false, null, null, new EnumMap<EnumCharacter, Boolean>(EnumCharacter.class));
+				final String search = Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.FIRST_POSTED_DATE).getRequest();
 				while(true) {
 					try {
 						final Iterator<Story> i = Searches.parseFullSearchPartially(search, ffc, isFirstRun ? Math.max(0, allStories.size() - 10) : 0);

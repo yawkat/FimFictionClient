@@ -12,4 +12,8 @@ public enum EnumStoryMatureCategories {
 	public int getSearchId() {
 		return searchId;
 	}
+	
+	public boolean matches(EnumStoryMatureCategories e) {
+		return this == ALL || this == e;
+	}
 }

@@ -14,7 +14,7 @@ public enum EnumStoryContentRating {
 	}
 	
 	public static EnumStoryContentRating parse(final String s) {
-		switch(s.toLowerCase()) {
+		switch(s.toLowerCase().trim()) {
 		case "all":
 			return ALL;
 		case "everyone":
@@ -26,5 +26,9 @@ public enum EnumStoryContentRating {
 		default:
 			return null;
 		}
+	}
+	
+	public boolean matches(EnumStoryContentRating e) {
+		return this == ALL || this == e;
 	}
 }
