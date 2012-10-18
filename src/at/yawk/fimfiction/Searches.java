@@ -50,7 +50,14 @@ public class Searches {
 			
 			@Override
 			public boolean hasNext() {
-				return cache.hasNext() || hasMorePages;
+				if(cache.hasNext()) {
+					return true;
+				} else if(hasMorePages) {
+					loadNext();
+					return cache.hasNext();
+				} else {
+					return false;
+				}
 			}
 			
 			@Override
@@ -59,7 +66,7 @@ public class Searches {
 					return cache.next();
 				} else if(hasMorePages) {
 					loadNext();
-					return cache.next();
+					return cache.hasNext() ? cache.next() : null;
 				} else {
 					return null;
 				}
