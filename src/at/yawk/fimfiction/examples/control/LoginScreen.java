@@ -15,7 +15,8 @@ import javax.swing.JTextField;
 import at.yawk.fimfiction.FimFictionConnectionAccount;
 
 public class LoginScreen extends JPanel {
-	private static final long					serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
+	
 	public LoginScreen(final FimFictionConnectionAccount connection, final Runnable onLogin) {
 		final GridLayout gl = new GridLayout(3, 1);
 		gl.setVgap(2);
@@ -24,6 +25,11 @@ public class LoginScreen extends JPanel {
 		final AtomicBoolean isShowingGreyUsername = new AtomicBoolean(false);
 		{
 			username = new JTextField();
+			if(!username.hasFocus()) {
+				username.setText("username");
+				username.setForeground(Color.GRAY);
+				isShowingGreyUsername.set(true);
+			}
 			username.addFocusListener(new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent arg0) {
@@ -50,10 +56,14 @@ public class LoginScreen extends JPanel {
 			add(username);
 		}
 		final JPasswordField password;
-		final AtomicBoolean isShowingGreyPassword = new AtomicBoolean(true);
+		final AtomicBoolean isShowingGreyPassword = new AtomicBoolean(false);
 		{
-			password = new JPasswordField("password");
-			password.setForeground(Color.GRAY);
+			password = new JPasswordField();
+			if(!password.hasFocus()) {
+				password.setText("password");
+				password.setForeground(Color.GRAY);
+				isShowingGreyPassword.set(true);
+			}
 			password.addFocusListener(new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent arg0) {
@@ -83,6 +93,7 @@ public class LoginScreen extends JPanel {
 			final JButton login = new JButton();
 			login.setAction(new AbstractAction() {
 				private static final long	serialVersionUID	= 1L;
+				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					login.setEnabled(false);

@@ -14,6 +14,7 @@ public class SearchRequestBuilder {
 	private EnumMap<EnumCharacter, Boolean>	characters			= new EnumMap<>(EnumCharacter.class);
 	private boolean							mustBeUnread		= false;
 	private boolean							mustBeFavorite		= false;
+	private boolean							mustBeReadLater		= false;
 	
 	public String getSearchTerm() {
 		return searchTerm;
@@ -147,13 +148,16 @@ public class SearchRequestBuilder {
 		
 		if(mustBeUnread)
 			sb.append("&unread");
+
+		if(mustBeReadLater)
+			sb.append("&read_it_later");
 		
 		sb.append("&minimum_words=");
 		sb.append(minimumWords == null ? "" : minimumWords);
 		
 		sb.append("&maximum_words=");
 		sb.append(maximumWords == null ? "" : maximumWords);
-
+		
 		for(final EnumCharacter ec : EnumCharacter.values()) {
 			final Boolean b = characters.get(ec);
 			if(b != null) {
@@ -176,5 +180,14 @@ public class SearchRequestBuilder {
 		b &= (minimumWords == null || s.getWords() >= minimumWords);
 		b &= (maximumWords == null || s.getWords() <= maximumWords);
 		return b;
+	}
+
+	public boolean isMustBeReadLater() {
+		return mustBeReadLater;
+	}
+
+	public SearchRequestBuilder setMustBeReadLater(boolean mustBeReadLater) {
+		this.mustBeReadLater = mustBeReadLater;
+		return this;
 	}
 }

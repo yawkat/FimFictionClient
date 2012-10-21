@@ -1,7 +1,8 @@
 package at.yawk.fimfiction.examples.control;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JComponent;
@@ -17,7 +18,10 @@ public class Main implements Runnable {
 	private final FimFictionConnectionAccount	connection		= new FimFictionConnectionAccount();
 	
 	public static void main(String[] args) {
-		new Main().run();
+		Main m = new Main();
+		if(args.length == 2)
+			m.connection.login(args[0], args[1]);
+		m.run();
 	}
 	
 	@Override
@@ -28,9 +32,9 @@ public class Main implements Runnable {
 			
 		}
 		
-		mainFrame.setLayout(new BorderLayout());
-		mainContentBox.setPreferredSize(new Dimension(300, 500));
-		mainFrame.add(mainContentBox, "Center");
+		mainFrame.setLayout(new GridLayout(1, 1));
+		mainContentBox.setPreferredSize(new Dimension(500, 700));
+		mainFrame.add(mainContentBox);
 		mainContentBox.setVisible(true);
 		mainFrame.validate();
 		mainFrame.pack();
@@ -41,12 +45,16 @@ public class Main implements Runnable {
 				System.exit(0);
 			}
 		});
-		displayLoginScreen();
+		if(connection.isLoggedIn())
+			displayMainScreen();
+		else
+			displayLoginScreen();
 		mainFrame.setVisible(true);
 	}
 	
-	private void displayLoginScreen() {
+	public void displayLoginScreen() {
 		mainContentBox.removeAll();
+		mainContentBox.setLayout(new FlowLayout(FlowLayout.CENTER));
 		mainContentBox.add(new LoginScreen(connection, new Runnable() {
 			@Override
 			public void run() {
@@ -54,9 +62,14 @@ public class Main implements Runnable {
 				displayMainScreen();
 			}
 		}));
+		mainContentBox.revalidate();
+		mainContentBox.repaint();
 	}
 	
-	private void displayMainScreen() {
+	public void displayMainScreen() {
 		mainContentBox.removeAll();
+		mainContentBox.setLayout(new GridLayout(1, 1));
+		mainContentBox.add(new MainScreen(connection, this));
+		mainContentBox.revalidate();
 	}
 }

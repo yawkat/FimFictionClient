@@ -41,12 +41,13 @@ public class Searches {
 	public static Iterator<Story> parseFullSearchPartially(final String url, final IFimFictionConnection ffc, final int beginStory) {
 		return new Iterator<Story>() {
 			{
+				i = beginStory / 10;
 				loadNext();
 			}
 			
 			private boolean			hasMorePages;
 			private Iterator<Story>	cache;
-			private int				i	= beginStory / 10;
+			private int				i;
 			
 			@Override
 			public boolean hasNext() {

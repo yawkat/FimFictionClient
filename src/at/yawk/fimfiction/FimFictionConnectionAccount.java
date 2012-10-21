@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 public class FimFictionConnectionAccount implements IFimFictionConnection {
 	private Map<String, String>	cookies	= new HashMap<String, String>();
+	private boolean isLoggedIn = false;
 	
 	@Override
 	public URLConnection getConnection(URL url) throws IOException {
@@ -42,11 +43,15 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 						cookies.put(s.substring(0, s.indexOf('=')), s.substring(s.indexOf('=') + 1, s.indexOf(';')));
 					}
 				}
-				return true;
+				return isLoggedIn = true;
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return isLoggedIn = false;
+	}
+	
+	public boolean isLoggedIn() {
+		return isLoggedIn;
 	}
 }

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-public final class Story {
+public class Story {
 	private final int				id;
 	private String					description;
 	private String					shortDescription;
