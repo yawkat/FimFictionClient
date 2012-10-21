@@ -1,7 +1,7 @@
 package at.yawk.fimfiction;
 
 public enum EnumStoryStatus {
-	COMPLETE, INCOMPLETE, ON_HIATUS;
+	COMPLETE, INCOMPLETE, ON_HIATUS, CANCELLED;
 	
 	public static EnumStoryStatus parse(final String s) {
 		switch(s.toLowerCase()) {
@@ -11,6 +11,8 @@ public enum EnumStoryStatus {
 			return INCOMPLETE;
 		case "on hiatus":
 			return ON_HIATUS;
+		case "cancelled":
+			return CANCELLED;
 		default:
 			return null;
 		}
