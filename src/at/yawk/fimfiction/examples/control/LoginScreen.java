@@ -1,12 +1,14 @@
 package at.yawk.fimfiction.examples.control;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.swing.JLabel;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -14,49 +16,43 @@ import at.yawk.fimfiction.FimFictionConnectionAccount;
 
 public class LoginScreen extends JPanel {
 	private static final long					serialVersionUID	= 1L;
-	private final FimFictionConnectionAccount	connection;
-	
-	public LoginScreen(final FimFictionConnectionAccount connection) {
-		this.connection = connection;
-		setLayout(new BorderLayout());
-		{
-			final JLabel jl = new JLabel("Login");
-			jl.setVisible(true);
-			add(jl, BorderLayout.PAGE_START);
-		}
+	public LoginScreen(final FimFictionConnectionAccount connection, final Runnable onLogin) {
+		final GridLayout gl = new GridLayout(3, 1);
+		gl.setVgap(2);
+		setLayout(gl);
 		final JTextField username;
+		final AtomicBoolean isShowingGreyUsername = new AtomicBoolean(false);
 		{
 			username = new JTextField();
-			final AtomicBoolean isShowingGrey = new AtomicBoolean(false);
 			username.addFocusListener(new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent arg0) {
 					if(username.getText().length() == 0) {
 						username.setText("username");
 						username.setForeground(Color.GRAY);
-						isShowingGrey.set(true);
+						isShowingGreyUsername.set(true);
 					} else {
 						username.setForeground(Color.BLACK);
-						isShowingGrey.set(false);
+						isShowingGreyUsername.set(false);
 					}
 				}
 				
 				@Override
 				public void focusGained(FocusEvent arg0) {
-					if(isShowingGrey.get())
+					if(isShowingGreyUsername.get())
 						username.setText("");
 					username.setForeground(Color.BLACK);
-					isShowingGrey.set(false);
+					isShowingGreyUsername.set(false);
 				}
 			});
 			username.setColumns(20);
 			username.setVisible(true);
-			add(username, BorderLayout.CENTER);
+			add(username);
 		}
 		final JPasswordField password;
+		final AtomicBoolean isShowingGreyPassword = new AtomicBoolean(true);
 		{
 			password = new JPasswordField("password");
-			final AtomicBoolean isShowingGrey = new AtomicBoolean(true);
 			password.setForeground(Color.GRAY);
 			password.addFocusListener(new FocusListener() {
 				@Override
@@ -64,24 +60,53 @@ public class LoginScreen extends JPanel {
 					if(password.getPassword().length == 0) {
 						password.setText("password");
 						password.setForeground(Color.GRAY);
-						isShowingGrey.set(true);
+						isShowingGreyPassword.set(true);
 					} else {
 						password.setForeground(Color.BLACK);
-						isShowingGrey.set(false);
+						isShowingGreyPassword.set(false);
 					}
 				}
 				
 				@Override
 				public void focusGained(FocusEvent arg0) {
-					if(isShowingGrey.get())
+					if(isShowingGreyPassword.get())
 						password.setText("");
 					password.setForeground(Color.BLACK);
-					isShowingGrey.set(false);
+					isShowingGreyPassword.set(false);
 				}
 			});
 			password.setColumns(20);
 			password.setVisible(true);
-			add(password, BorderLayout.PAGE_END);
+			add(password);
+		}
+		{
+			final JButton login = new JButton();
+			login.setAction(new AbstractAction() {
+				private static final long	serialVersionUID	= 1L;
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					login.setEnabled(false);
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							if(!isShowingGreyUsername.get() && !isShowingGreyPassword.get()) {
+								if(connection.login(username.getText(), new String(password.getPassword()))) {
+									onLogin.run();
+								} else {
+									login.setEnabled(true);
+									JOptionPane.showMessageDialog(LoginScreen.this, "Bad Login");
+								}
+							} else {
+								login.setEnabled(true);
+								JOptionPane.showMessageDialog(LoginScreen.this, "Missing information");
+							}
+						}
+					}).start();
+				}
+			});
+			login.setText("Login");
+			login.setVisible(true);
+			add(login);
 		}
 		setVisible(true);
 	}

@@ -47,6 +47,16 @@ public class Main implements Runnable {
 	
 	private void displayLoginScreen() {
 		mainContentBox.removeAll();
-		mainContentBox.add(new LoginScreen(connection));
+		mainContentBox.add(new LoginScreen(connection, new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Logged in!");
+				displayMainScreen();
+			}
+		}));
+	}
+	
+	private void displayMainScreen() {
+		mainContentBox.removeAll();
 	}
 }
