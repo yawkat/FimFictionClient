@@ -45,6 +45,7 @@ public class LoginScreen extends JPanel {
 				public void focusGained(FocusEvent arg0) {
 					if(isShowingGrey.get())
 						username.setText("");
+					username.setForeground(Color.BLACK);
 					isShowingGrey.set(false);
 				}
 			});
@@ -74,6 +75,7 @@ public class LoginScreen extends JPanel {
 				public void focusGained(FocusEvent arg0) {
 					if(isShowingGrey.get())
 						password.setText("");
+					password.setForeground(Color.BLACK);
 					isShowingGrey.set(false);
 				}
 			});
