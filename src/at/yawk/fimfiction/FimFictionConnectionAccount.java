@@ -8,13 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class FimFictionConnectionAccount implements IFimFictionConnection {
-	private Map<String, String>	cookies	= new HashMap<String, String>();
-	private boolean isLoggedIn = false;
+	private Map<String, String>	cookies		= new HashMap<String, String>();
+	private boolean				isLoggedIn	= false;
+	private boolean				mature		= true;
 	
 	@Override
 	public URLConnection getConnection(URL url) throws IOException {
 		final URLConnection urlc = url.openConnection();
-		final StringBuilder sb = new StringBuilder("view_mature=true; ");
+		final StringBuilder sb = new StringBuilder(mature ? "view_mature=true; " : "");
 		for(final Entry<String, String> e : cookies.entrySet()) {
 			sb.append(e.getKey());
 			sb.append('=');
@@ -53,5 +54,15 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 	
 	public boolean isLoggedIn() {
 		return isLoggedIn;
+	}
+	
+	@Override
+	public void setDisplayMature(boolean mature) {
+		this.mature = mature;
+	}
+
+	@Override
+	public boolean getDisplayMature() {
+		return mature;
 	}
 }

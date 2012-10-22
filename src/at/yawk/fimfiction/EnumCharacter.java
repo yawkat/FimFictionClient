@@ -1,5 +1,14 @@
 package at.yawk.fimfiction;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
+
 public enum EnumCharacter {
 	TWILIGHT_SPARKLE(7, "Twilight Sparkle", "http://static.fimfiction.net/images/characters/twilight_sparkle.png"),
 	RAINBOW_DASH(8, "Rainbow Dash", "http://static.fimfiction.net/images/characters/rainbow_dash.png"),
@@ -8,11 +17,11 @@ public enum EnumCharacter {
 	RARITY(11, "Rarity", "http://static.fimfiction.net/images/characters/rarity.png"),
 	FLUTTERSHY(12, "Fluttershy", "http://static.fimfiction.net/images/characters/fluttershy.png"),
 	SPIKE(16, "Spike", "http://static.fimfiction.net/images/characters/spike.png"),
-	MAIN_6(74, "Main 6", "http://static.fimfiction.net/images/characters/main_6.png"),
+	MAIN_6(74, "Main 6", "http://static.fimfiction.net/images/characters/main_6.png", 64),
 	APPLE_BLOOM(13, "Apple Bloom", "http://static.fimfiction.net/images/characters/apple_bloom.png"),
 	SCOOTALOO(14, "Scootaloo", "http://static.fimfiction.net/images/characters/scootaloo.png"),
 	SWEETIE_BELLE(15, "Sweetie Belle", "http://static.fimfiction.net/images/characters/sweetie_belle.png"),
-	CUTIE_MARK_CRUSADERS(75, "Cutie Mark Crusaders", "http://static.fimfiction.net/images/characters/cmc.png"),
+	CUTIE_MARK_CRUSADERS(75, "Cutie Mark Crusaders", "http://static.fimfiction.net/images/characters/cmc.png", 64),
 	PRINCESS_CELESTIA(17, "Princess Celestia", "http://static.fimfiction.net/images/characters/celestia.png"),
 	PRINCESS_LUNA(18, "Princess Luna", "http://static.fimfiction.net/images/characters/princess_luna.png"),
 	NIGHTMARE_MOON(54, "Nightmare Moon", "http://static.fimfiction.net/images/characters/nightmare_moon.png"),
@@ -40,8 +49,8 @@ public enum EnumCharacter {
 	IRON_WILL(71, "Iron Will", "http://static.fimfiction.net/images/characters/ironwillicon.png"),
 	PRINCESS_CADENCE(72, "Princess Cadence", "http://static.fimfiction.net/images/characters/Cadence.png"),
 	SHINING_ARMOR(73, "Shining Armor", "http://static.fimfiction.net/images/characters/shining-armor.png"),
-	WONDERBOLTS(76, "Wonderbolts", "http://static.fimfiction.net/images/characters/wonderbolts.png"),
-	DIAMOND_DOGS(77, "Diamond Dogs", "http://static.fimfiction.net/images/characters/diamond_dogs.png"),
+	WONDERBOLTS(76, "Wonderbolts", "http://static.fimfiction.net/images/characters/wonderbolts.png", 64),
+	DIAMOND_DOGS(77, "Diamond Dogs", "http://static.fimfiction.net/images/characters/diamond_dogs.png", 64),
 	QUEEN_CHRYSALIS(78, "Queen Chrysalis", "http://static.fimfiction.net/images/characters/queen-chrysalis.png"),
 	BIG_MACINTOSH(22, "Big Macintosh", "http://static.fimfiction.net/images/characters/big_mac.png"),
 	GRANNY_SMITH(23, "Granny Smith", "http://static.fimfiction.net/images/characters/granny_smith.png"),
@@ -81,11 +90,20 @@ public enum EnumCharacter {
 	private final int id;
 	private final String displayName;
 	private final String imageUrl;
+	private BufferedImage image = null;
+	private boolean isLoadingImage = false;
+	private final Set<Runnable> onFinishLoad = new HashSet<>();
+	private final int imageWidth;
 	
 	private EnumCharacter(final int id, final String displayName, final String imageUrl) {
+		this(id, displayName, imageUrl, 32);
+	}
+	
+	private EnumCharacter(final int id, final String displayName, final String imageUrl, final int imageWidth) {
 		this.id = id;
 		this.displayName = displayName;
 		this.imageUrl = imageUrl;
+		this.imageWidth = imageWidth;
 	}
 
 	public int getId() {
@@ -98,5 +116,42 @@ public enum EnumCharacter {
 
 	public String getImageUrl() {
 		return imageUrl;
+	}
+	
+	public BufferedImage getImage() {
+		if(image != null) {
+			return image;
+		} else if(isLoadingImage) {
+			return null;
+		} else {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						image = ImageIO.read(new URL(imageUrl));
+						final Iterator<Runnable> i = onFinishLoad.iterator();
+						while(i.hasNext()) {
+							final Runnable r = i.next();
+							r.run();
+							i.remove();
+						}
+					} catch(IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+			return null;
+		}
+	}
+	
+	public void addOnLoad(Runnable r) {
+		if(image == null)
+			onFinishLoad.add(r);
+		else
+			r.run();
+	}
+
+	public int getImageWidth() {
+		return imageWidth;
 	}
 }
