@@ -9,22 +9,16 @@ import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +51,7 @@ import at.yawk.fimfiction.Util;
 import at.yawk.fimfiction.XMLHelper;
 
 public class Main implements Runnable {
-	private final Map<Integer, Story>	allStories		= Collections.synchronizedMap(new HashMap<Integer, Story>(100));
+	private final IStoryDateAccess		dateAccess		= new RandomFileStoryDateAccess();
 	private final IFimFictionConnection	ffc				= new FimFictionConnectionStandard();
 	final static File					rootDir			= new File(".");
 	private final XStream				xs				= XMLHelper.getXStreamInstance();
@@ -66,7 +60,7 @@ public class Main implements Runnable {
 	
 	private Main() {
 		rootDir.mkdirs();
-		xs.alias("storycache", DataFileEntry.class);
+		xs.alias("storycache", StandardStoryDateAccess.dataFileEntryClass());
 		try {
 			final Handler fh = new StreamHandler(new FileOutputStream(new File(rootDir, "all.log")), new Formatter() {
 				@Override
@@ -118,39 +112,18 @@ public class Main implements Runnable {
 		return n;
 	}
 	
-	private void updateStory(int id) {
-		try {
-			allStories.put(id, updateStory(allStories.get(id)));
-		} catch(IOException | JSONException e) {
-			logException(Level.WARNING, e);
-		}
-	}
-	
 	private void loadData() {
 		logger.log(Level.INFO, "Loading...");
-		final File s = new File(rootDir, "stories.xml");
-		if(s.exists()) {
-			final DataFileEntry[] entries = (DataFileEntry[])xs.fromXML(s);
-			for(DataFileEntry dfe : entries) {
-				final Story t = new Story(dfe.id);
-				t.setModifyTime(new Date(dfe.lastModified * 1000L));
-				allStories.put(dfe.id, t);
-			}
+		try {
+			dateAccess.load(rootDir, xs);
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	private void saveData() throws IOException {
 		logger.log(Level.INFO, "Saving...");
-		final File s = new File(rootDir, "stories.xml");
-		final DataFileEntry[] entries = new DataFileEntry[allStories.size()];
-		int i = 0;
-		for(Entry<Integer, Story> e : allStories.entrySet()) {
-			entries[i++] = new DataFileEntry(e.getKey(), e.getValue().getModifyTime() == null ? 0L : e.getValue().getModifyTime().getTime() / 1000L);
-		}
-		final Writer fw = new FileWriter(s);
-		xs.toXML(entries, fw);
-		fw.flush();
-		fw.close();
+		dateAccess.save(rootDir, xs);
 	}
 	
 	public static void main(final String[] args) {
@@ -167,11 +140,11 @@ public class Main implements Runnable {
 						final Iterator<Story> i = Searches.parseFullSearchPartially(search, ffc, 0);
 						while(i.hasNext()) {
 							final Story s = i.next();
-							if(allStories.containsKey(s.getId())) {
-								final Story t = allStories.get(s.getId());
+							if(dateAccess.hasStory(s.getId())) {
+								final Story t = dateAccess.getStoryForIndex(s.getId());
 								try {
 									final Story u;
-									allStories.put(s.getId(), u = updateStory(t));
+									dateAccess.setStoryForIndex(s.getId(), u = updateStory(t));
 									if(t.getModifyTime() != null && u.getModifyTime().getTime() == t.getModifyTime().getTime())
 										break;
 								} catch(IOException | JSONException e) {
@@ -194,15 +167,17 @@ public class Main implements Runnable {
 				final Executor e = Executors.newFixedThreadPool(10);
 				while(true) {
 					try {
-						final Collection<Integer> c = new ArrayList<>(allStories.keySet());
-						for(final int i : c) {
-							if(allStories.get(i).getModifyTime() == null || allStories.get(i).getModifyTime().getTime() == 0)
+						final Collection<Story> c = new ArrayList<>(dateAccess.getAllStoriesInMemory());
+						for(final Story s : c) {
+							if(s.getModifyTime() == null || s.getModifyTime().getTime() == 0)
 								e.execute(new Runnable() {
 									@Override
 									public void run() {
 										runningDownloaders.incrementAndGet();
 										try {
-											updateStory(i);
+											dateAccess.setStoryForIndex(s.getId(), updateStory(s));
+										} catch(IOException | JSONException e) {
+											e.printStackTrace();
 										} finally {
 											runningDownloaders.decrementAndGet();
 										}
@@ -233,12 +208,12 @@ public class Main implements Runnable {
 				final String search = Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.FIRST_POSTED_DATE).getRequest();
 				while(true) {
 					try {
-						final Iterator<Story> i = Searches.parseFullSearchPartially(search, ffc, isFirstRun ? Math.max(0, allStories.size() - 10) : 0);
+						final Iterator<Story> i = Searches.parseFullSearchPartially(search, ffc, isFirstRun ? Math.max(0, dateAccess.getTotalStoryCount() - 10) : 0);
 						while(i.hasNext()) {
 							final Story s = i.next();
-							if(!allStories.containsKey(s.getId())) {
+							if(!dateAccess.hasStory(s.getId())) {
 								logger.log(Level.INFO, "Adding story " + s.getId());
-								allStories.put(s.getId(), s);
+								dateAccess.setStoryForIndex(s.getId(), s);
 							} else if(!isFirstRun) {
 								break;
 							}
@@ -261,54 +236,56 @@ public class Main implements Runnable {
 		startSaving();
 		startAddingThread();
 		startUpdateThread();
-		final JFrame jf = new JFrame("download");
-		jf.add(new JComponent() {
-			{
-				setPreferredSize(new Dimension(250 * 2, 250 * 2));
-				setBackground(Color.WHITE);
-			}
-			
-			@Override
-			public void paintComponent(Graphics g) {
-				final int width = getWidth() / 2;
-				final int height = getHeight() / 2;
-				int i = 0;
-				for(int x = 0; x < width; x++) {
-					for(int y = 0; y < height; y++) {
-						final int id = x + y * width;
-						final Story s = allStories.get(id);
-						if(s != null) {
-							final boolean b = s.getModifyTime() == null || s.getModifyTime().getTime() == 0;
-							g.setColor(b ? Color.RED : Color.BLUE);
-							g.fillRect(x * 2, y * 2, 2, 2);
-							if(b)
-								i++;
+		if(!dateAccess.isSlowAccess()) {
+			final JFrame jf = new JFrame("download");
+			jf.add(new JComponent() {
+				{
+					setPreferredSize(new Dimension(250 * 2, 250 * 2));
+					setBackground(Color.WHITE);
+				}
+				
+				@Override
+				public void paintComponent(Graphics g) {
+					final int width = getWidth() / 2;
+					final int height = getHeight() / 2;
+					int i = 0;
+					for(int x = 0; x < width; x++) {
+						for(int y = 0; y < height; y++) {
+							final int id = x + y * width;
+							final Story s = dateAccess.getStoryForIndex(id);
+							if(s != null) {
+								final boolean b = s.getModifyTime() == null || s.getModifyTime().getTime() == 0;
+								g.setColor(b ? Color.RED : Color.BLUE);
+								g.fillRect(x * 2, y * 2, 2, 2);
+								if(b)
+									i++;
+							}
 						}
 					}
+					g.setColor(Color.BLACK);
+					g.drawString("Stories: " + dateAccess.getTotalStoryCount() + " total, " + i + " not downloaded yet", 2, getHeight() - 12);
 				}
-				g.setColor(Color.BLACK);
-				g.drawString("Stories: " + allStories.size() + " total, " + i + " not downloaded yet", 2, getHeight() - 12);
+			});
+			jf.validate();
+			jf.pack();
+			jf.setResizable(false);
+			jf.setLocationRelativeTo(null);
+			final AtomicBoolean isEnabled = new AtomicBoolean(true);
+			jf.addWindowListener(new WindowAdapter() {
+				public void windowClosed(WindowEvent e) {
+					isEnabled.set(false);
+				}
+			});
+			jf.setBackground(Color.WHITE);
+			jf.setVisible(true);
+			while(isEnabled.get()) {
+				try {
+					TimeUnit.SECONDS.sleep(5L);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+				jf.repaint();
 			}
-		});
-		jf.validate();
-		jf.pack();
-		jf.setResizable(false);
-		jf.setLocationRelativeTo(null);
-		final AtomicBoolean isEnabled = new AtomicBoolean(true);
-		jf.addWindowListener(new WindowAdapter() {
-			public void windowClosed(WindowEvent e) {
-				isEnabled.set(false);
-			}
-		});
-		jf.setBackground(Color.WHITE);
-		jf.setVisible(true);
-		while(isEnabled.get()) {
-			try {
-				TimeUnit.SECONDS.sleep(5L);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			jf.repaint();
 		}
 	}
 	
@@ -337,21 +314,6 @@ public class Main implements Runnable {
 				}
 			}
 		}).start();
-	}
-	
-	private static class DataFileEntry {
-		@SuppressWarnings("unused")
-		public DataFileEntry() {
-			
-		}
-		
-		public DataFileEntry(int id, long modified) {
-			this.id = id;
-			this.lastModified = modified;
-		}
-		
-		private int		id;
-		private long	lastModified;
 	}
 	
 	private void clearStoryMemory(final Story s) {
