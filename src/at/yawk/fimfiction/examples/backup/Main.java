@@ -51,7 +51,7 @@ import at.yawk.fimfiction.Util;
 import at.yawk.fimfiction.XMLHelper;
 
 public class Main implements Runnable {
-	private final IStoryDateAccess		dateAccess		= new RandomFileStoryDateAccess();
+	private final IStoryDateAccess		dateAccess		= new StandardStoryDateAccess();
 	private final IFimFictionConnection	ffc				= new FimFictionConnectionStandard();
 	final static File					rootDir			= new File(".");
 	private final XStream				xs				= XMLHelper.getXStreamInstance();
