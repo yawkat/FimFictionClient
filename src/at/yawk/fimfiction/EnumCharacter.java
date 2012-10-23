@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 
@@ -87,6 +89,8 @@ public enum EnumCharacter {
 	ORIGINAL_CHARACTER(49, "Original Character", "http://static.fimfiction.net/images/characters/oc.png"),
 	OTHER(62, "Other", "http://static.fimfiction.net/images/characters/other.png");
 	
+	private final static Executor imageDownloader = Executors.newFixedThreadPool(5);
+	
 	private final int id;
 	private final String displayName;
 	private final String imageUrl;
@@ -124,7 +128,7 @@ public enum EnumCharacter {
 		} else if(isLoadingImage) {
 			return null;
 		} else {
-			new Thread(new Runnable() {
+			imageDownloader.execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -139,7 +143,7 @@ public enum EnumCharacter {
 						e.printStackTrace();
 					}
 				}
-			}).start();
+			});
 			return null;
 		}
 	}

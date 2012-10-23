@@ -30,7 +30,7 @@ import at.yawk.fimfiction.Stories;
 import at.yawk.fimfiction.Story;
 import at.yawk.fimfiction.StoryID;
 
-public class SearchDisplayTable extends JPanel {
+public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 	private static final long		serialVersionUID		= 1L;
 	
 	private final Runnable			updateRunnable;
@@ -46,7 +46,7 @@ public class SearchDisplayTable extends JPanel {
 	private boolean					waitingScrolling		= false;
 	private final boolean			partialLoading;
 	
-	public SearchDisplayTable(final String request, final IFimFictionConnection connection, final boolean partialLoading) {
+	public SearchDisplayTable(final String request, final IFimFictionConnection connection, final boolean partialLoading, final JMenuItem... additionalItems) {
 		this.partialLoading = partialLoading;
 		mainPanel = new JTable(model = new DefaultTableModel() {
 			private static final long	serialVersionUID	= 1L;
@@ -78,6 +78,8 @@ public class SearchDisplayTable extends JPanel {
 		add(scrollpane);
 		updateData();
 		final JPopupMenu refresh = new JPopupMenu();
+		for(JMenuItem item : additionalItems)
+			refresh.add(item);
 		final JMenuItem item = new JMenuItem();
 		item.setAction(new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
@@ -167,5 +169,15 @@ public class SearchDisplayTable extends JPanel {
 			shouldRestart = true;
 			startUpdating();
 		}
+	}
+
+	@Override
+	public void select() {
+		startUpdating();
+	}
+
+	@Override
+	public void deselect() {
+		stopUpdating();
 	}
 }

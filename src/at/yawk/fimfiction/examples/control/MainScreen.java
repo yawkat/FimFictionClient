@@ -1,6 +1,7 @@
 package at.yawk.fimfiction.examples.control;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -65,11 +66,14 @@ public class MainScreen extends JPanel {
 			tabs.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
-					for(final SearchDisplayTable sdt : storyTabs)
-						if(tabs.getSelectedComponent() == sdt)
-							sdt.startUpdating();
-						else
-							sdt.stopUpdating();
+					for(final Component sdt : tabs.getComponents()) {
+						if(sdt instanceof ISelectionNotify) {
+							if(tabs.getSelectedComponent() == sdt)
+								((ISelectionNotify)sdt).select();
+							else
+								((ISelectionNotify)sdt).deselect();
+						}
+					}
 				}
 			});
 			tabs.addTab("Search", new CustomSearch(ffc));
