@@ -2,7 +2,6 @@ package at.yawk.fimfiction;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,19 +36,16 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 	
 	public boolean login(final String username, final String password) {
 		try {
-			final URLConnection urlc = new URL(Util.FIMFICTION + "ajax_login.php").openConnection();
-			urlc.setDoInput(true);
-			urlc.setDoOutput(true);
-			urlc.setUseCaches(false);
+			final IURLConnection urlc = web.getConnection(new URL(Util.FIMFICTION + "ajax_login.php"));
 			urlc.connect();
 			urlc.getOutputStream().write(("username=" + username + "&password=" + password).getBytes());
 			urlc.getOutputStream().flush();
 			final char c = (char)(urlc.getInputStream().read());
 			if(c == '0') {
 				String headerName;
-				for(int i = 1; (headerName = urlc.getHeaderFieldKey(i)) != null; i++) {
+				for(int i = 1; (headerName = urlc.getHeader(i)[0]) != null; i++) {
 					if(headerName.equals("Set-Cookie")) {
-						final String s = urlc.getHeaderField(i);
+						final String s = urlc.getHeader(i)[1];
 						cookies.put(s.substring(0, s.indexOf('=')), s.substring(s.indexOf('=') + 1, s.indexOf(';')));
 					}
 				}

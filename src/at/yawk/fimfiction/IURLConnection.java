@@ -17,4 +17,6 @@ public interface IURLConnection {
 	long getContentLengthLong();
 	
 	void setHeader(String name, String value);
+
+	String[] getHeader(int i);
 }

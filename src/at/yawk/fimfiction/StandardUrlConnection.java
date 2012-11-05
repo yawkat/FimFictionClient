@@ -12,34 +12,39 @@ public class StandardUrlConnection implements IURLConnection {
 	public StandardUrlConnection(final URLConnection urlc) {
 		this.urlc = urlc;
 	}
-
+	
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return urlc.getInputStream();
 	}
-
+	
 	@Override
 	public URL getURL() {
 		return urlc.getURL();
 	}
-
+	
 	@Override
 	public void connect() throws IOException {
 		urlc.connect();
 	}
-
+	
 	@Override
 	public OutputStream getOutputStream() throws IOException {
 		return urlc.getOutputStream();
 	}
-
+	
 	@Override
 	public long getContentLengthLong() {
 		return urlc.getContentLengthLong();
 	}
-
+	
 	@Override
 	public void setHeader(String name, String value) {
 		urlc.setRequestProperty(name, value);
+	}
+	
+	@Override
+	public String[] getHeader(int i) {
+		return new String[] { urlc.getHeaderFieldKey(i), urlc.getHeaderField(i) };
 	}
 }
