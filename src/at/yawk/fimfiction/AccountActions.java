@@ -2,47 +2,33 @@ package at.yawk.fimfiction;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class AccountActions {
 	public static void markReadLater(final IFimFictionConnection ffc, final boolean readLater, final Story s) throws IOException {
-		final URLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_read_it_later.php"));
-		urlc.setDoInput(true);
-		urlc.setDoOutput(true);
-		urlc.setUseCaches(false);
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_read_it_later.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("story=" + s.getId() + "&selected=" + (readLater ? 1 : 0)).getBytes());
 		Util.clearStream(urlc.getInputStream());
 	}
 	
 	public static void markFavorite(final IFimFictionConnection ffc, final boolean favorite, final boolean email, final Story s) throws IOException {
-		final URLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_favourite.php"));
-		urlc.setDoInput(true);
-		urlc.setDoOutput(true);
-		urlc.setUseCaches(false);
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_favourite.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("story=" + s.getId() + "&selected=" + (favorite ? 1 : 0) + "&email=" + (email ? 1 : 0)).getBytes());
 		Util.clearStream(urlc.getInputStream());
 	}
 	
 	public static void toggleRead(final IFimFictionConnection ffc, final Chapter c) throws IOException {
-		final URLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_toggle_read.php"));
-		urlc.setDoInput(true);
-		urlc.setDoOutput(true);
-		urlc.setUseCaches(false);
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_toggle_read.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("chapter=" + c.getId()).getBytes());
 		Util.clearStream(urlc.getInputStream());
 	}
 	
 	public static void setLike(final IFimFictionConnection ffc, final boolean isLike, final String token, final Story s) throws IOException {
-		final URLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "rate.php"));
-		urlc.setDoInput(true);
-		urlc.setDoOutput(true);
-		urlc.setUseCaches(false);
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "rate.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("story=" + s.getId() + "&rating=" + (isLike ? 100 : 0) + "&ip=" + token).getBytes());
 		Util.clearStream(urlc.getInputStream());

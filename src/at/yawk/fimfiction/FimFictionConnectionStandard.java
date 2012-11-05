@@ -6,12 +6,21 @@ import java.net.URLConnection;
 
 public class FimFictionConnectionStandard implements IFimFictionConnection {
 	private boolean	mature	= true;
+	private final IWebProvider web;
+	
+	public FimFictionConnectionStandard(final IWebProvider web) {
+		this.web = web;
+	}
+	
+	public FimFictionConnectionStandard() {
+		this(new StandardInternetProvider());
+	}
 	
 	@Override
-	public URLConnection getConnection(URL url) throws IOException {
-		final URLConnection urlc = url.openConnection();
+	public IURLConnection getConnection(URL url) throws IOException {
+		final IURLConnection urlc = web.getConnection(url);
 		if(mature)
-			urlc.setRequestProperty("Cookie", "view_mature=true");
+			urlc.setHeader("Cookie", "view_mature=true");
 		return urlc;
 	}
 	

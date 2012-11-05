@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 
 import org.json.JSONArray;
@@ -34,7 +33,7 @@ public final class Stories {
 		default:
 			throw new NullPointerException("Unknown download type: " + downloadType);
 		}
-		final URLConnection c = ffc.getConnection(new URL(inputUrl));
+		final IURLConnection c = ffc.getConnection(new URL(inputUrl));
 		Util.copyStream(c.getInputStream(), output, c.getContentLengthLong() == -1 ? null : update, c.getContentLengthLong());
 	}
 	

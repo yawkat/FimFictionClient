@@ -3,7 +3,6 @@ package at.yawk.fimfiction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
@@ -37,8 +36,8 @@ public final class Util {
 			update.setProgress(1);
 	}
 	
-	public static Document getHTML(final URLConnection urlc) throws IOException {
-		return Jsoup.parse(readFully(urlc.getInputStream()), urlc.getURL().toString());
+	public static Document getHTML(final IURLConnection iurlConnection) throws IOException {
+		return Jsoup.parse(readFully(iurlConnection.getInputStream()), iurlConnection.getURL().toString());
 	}
 	
 	public static String readFully(final InputStream is) throws IOException {

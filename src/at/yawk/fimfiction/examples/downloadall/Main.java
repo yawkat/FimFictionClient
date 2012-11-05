@@ -6,8 +6,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-
 import org.json.JSONException;
 
 import at.yawk.fimfiction.EnumDownloadType;

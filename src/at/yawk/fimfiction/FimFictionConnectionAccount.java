@@ -11,10 +11,19 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 	private Map<String, String>	cookies		= new HashMap<String, String>();
 	private boolean				isLoggedIn	= false;
 	private boolean				mature		= true;
+	private final IWebProvider	web;
+	
+	public FimFictionConnectionAccount(final IWebProvider web) {
+		this.web = web;
+	}
+	
+	public FimFictionConnectionAccount() {
+		this(new StandardInternetProvider());
+	}
 	
 	@Override
-	public URLConnection getConnection(URL url) throws IOException {
-		final URLConnection urlc = url.openConnection();
+	public IURLConnection getConnection(URL url) throws IOException {
+		final IURLConnection urlc = web.getConnection(url);
 		final StringBuilder sb = new StringBuilder(mature ? "view_mature=true; " : "");
 		for(final Entry<String, String> e : cookies.entrySet()) {
 			sb.append(e.getKey());
@@ -22,7 +31,7 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 			sb.append(e.getValue());
 			sb.append("; ");
 		}
-		urlc.setRequestProperty("Cookie", sb.toString());
+		urlc.setHeader("Cookie", sb.toString());
 		return urlc;
 	}
 	
@@ -60,7 +69,7 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 	public void setDisplayMature(boolean mature) {
 		this.mature = mature;
 	}
-
+	
 	@Override
 	public boolean getDisplayMature() {
 		return mature;
