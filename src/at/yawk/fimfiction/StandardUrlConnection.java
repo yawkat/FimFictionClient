@@ -11,6 +11,9 @@ public class StandardUrlConnection implements IURLConnection {
 	
 	public StandardUrlConnection(final URLConnection urlc) {
 		this.urlc = urlc;
+		urlc.setDoInput(true);
+		urlc.setDoOutput(true);
+		urlc.setUseCaches(false);
 	}
 	
 	@Override
