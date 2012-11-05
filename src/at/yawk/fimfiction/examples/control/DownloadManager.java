@@ -71,4 +71,12 @@ public class DownloadManager {
 	public static interface IDownloadListener {
 		public IDownloadUpdate getDownloadUpdate(Story story);
 	}
+	
+	public EnumDownloadType getStandardDownloadType() {
+		return downloadType;
+	}
+	
+	public File getDownloadDirectory() {
+		return downloadDir;
+	}
 }
