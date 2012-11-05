@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 import org.json.JSONArray;
@@ -11,12 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import at.yawk.fimfiction.examples.control.IDownloadUpdate;
+
 public final class Stories {
 	private Stories() {
 		
 	}
 	
-	public static void downloadStory(final Story s, final OutputStream output, final EnumDownloadType downloadType, final IFimFictionConnection ffc) throws MalformedURLException, IOException {
+	public static void downloadStory(final Story s, final OutputStream output, final EnumDownloadType downloadType, final IFimFictionConnection ffc, final IDownloadUpdate update) throws IOException {
 		String inputUrl;
 		switch(downloadType) {
 		case EPUB:
@@ -31,7 +34,12 @@ public final class Stories {
 		default:
 			throw new NullPointerException("Unknown download type: " + downloadType);
 		}
-		Util.copyStream(ffc.getConnection(new URL(inputUrl)).getInputStream(), output);
+		final URLConnection c = ffc.getConnection(new URL(inputUrl));
+		Util.copyStream(c.getInputStream(), output, c.getContentLengthLong() == -1 ? null : update, c.getContentLengthLong());
+	}
+	
+	public static void downloadStory(final Story s, final OutputStream output, final EnumDownloadType downloadType, final IFimFictionConnection ffc) throws IOException {
+		downloadStory(s, output, downloadType, ffc, null);
 	}
 	
 	public static void updateStory(final Story s, IFimFictionConnection ffc) throws MalformedURLException, IOException, JSONException {

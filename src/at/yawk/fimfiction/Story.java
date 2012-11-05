@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-public final class Story {
+public class Story {
 	private final int				id;
 	private String					description;
 	private String					shortDescription;
@@ -190,5 +190,10 @@ public final class Story {
 	private void nullSavePutHashCode(final Collection<Integer> c, final Object o) {
 		if(o != null)
 			c.add(o.hashCode());
+	}
+	
+	@Override
+	public String toString() {
+		return getTitle();
 	}
 }
