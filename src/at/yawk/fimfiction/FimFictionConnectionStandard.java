@@ -2,7 +2,6 @@ package at.yawk.fimfiction;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class FimFictionConnectionStandard implements IFimFictionConnection {
 	private boolean	mature	= true;
