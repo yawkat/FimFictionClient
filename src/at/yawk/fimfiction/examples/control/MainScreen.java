@@ -18,9 +18,10 @@ import at.yawk.fimfiction.SearchRequestBuilder;
 import at.yawk.fimfiction.Util;
 
 public class MainScreen extends JPanel {
-	private static final long	serialVersionUID	= 1L;
-	private final JMenuBar		menubar;
-	private final JTabbedPane	tabs;
+	private static final long		serialVersionUID	= 1L;
+	private final JMenuBar			menubar;
+	private final JTabbedPane		tabs;
+	private final DownloadManager	dlManager			= new DownloadManager();
 	
 	public MainScreen(final FimFictionConnectionAccount ffc, final Main main) {
 		setLayout(new BorderLayout());
@@ -62,7 +63,6 @@ public class MainScreen extends JPanel {
 		}
 		{
 			tabs = new JTabbedPane();
-			final SearchDisplayTable[] storyTabs = new SearchDisplayTable[] { new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).getRequest(), ffc, false), new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), ffc, false), new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false) };
 			tabs.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
@@ -76,10 +76,11 @@ public class MainScreen extends JPanel {
 					}
 				}
 			});
-			tabs.addTab("Search", new CustomSearch(ffc));
-			tabs.addTab("Favorites", storyTabs[0]);
-			tabs.addTab("Unread", storyTabs[1]);
-			tabs.addTab("Read Later", storyTabs[2]);
+			tabs.addTab("Search", new CustomSearch(ffc, dlManager));
+			tabs.addTab("Favorites", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).getRequest(), ffc, false, dlManager));
+			tabs.addTab("Unread", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), ffc, false, dlManager));
+			tabs.addTab("Read Later", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false, dlManager));
+			tabs.addTab("Downloads", new DownloadList(dlManager));
 			tabs.setVisible(true);
 			add(tabs);
 		}

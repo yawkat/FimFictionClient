@@ -191,4 +191,9 @@ public class Story {
 		if(o != null)
 			c.add(o.hashCode());
 	}
+	
+	@Override
+	public String toString() {
+		return getTitle();
+	}
 }

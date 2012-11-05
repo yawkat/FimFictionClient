@@ -13,12 +13,14 @@ import at.yawk.fimfiction.SearchRequestBuilder;
 import at.yawk.fimfiction.Util;
 
 public class CustomSearch extends JPanel implements ISelectionNotify {
-	private static final long	serialVersionUID	= 1L;
-	private ISelectionNotify	childNotify			= null;
+	private static final long		serialVersionUID	= 1L;
+	private ISelectionNotify		childNotify			= null;
+	private final DownloadManager	dlManager;
 	
-	public CustomSearch(final IFimFictionConnection connection) {
+	public CustomSearch(final IFimFictionConnection connection, final DownloadManager dlManager) {
 		setLayout(new GridLayout(1, 1));
 		displaySettings(connection);
+		this.dlManager = dlManager;
 	}
 	
 	@Override
@@ -44,14 +46,14 @@ public class CustomSearch extends JPanel implements ISelectionNotify {
 				final JMenuItem mi = new JMenuItem();
 				mi.setAction(new AbstractAction() {
 					private static final long	serialVersionUID	= 1L;
-
+					
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						displaySettings(connection);
 					}
 				});
 				mi.setText("New Search");
-				add((Component)(childNotify = new SearchDisplayTable(Util.FIMFICTION + "index.php?" + builder.getRequest(), connection, true, mi)));
+				add((Component)(childNotify = new SearchDisplayTable(Util.FIMFICTION + "index.php?" + builder.getRequest(), connection, true, dlManager, mi)));
 				select();
 			}
 		}));
