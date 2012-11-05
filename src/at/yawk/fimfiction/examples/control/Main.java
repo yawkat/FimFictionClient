@@ -11,14 +11,20 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import at.yawk.fimfiction.FimFictionConnectionAccount;
+import at.yawk.fimfiction.IWebProvider;
+import at.yawk.fimfiction.StandardInternetProvider;
 
 public class Main implements Runnable {
 	private final JFrame						mainFrame		= new JFrame("FimFiction Client");
 	public final JComponent						mainContentBox	= new JPanel();
-	private final FimFictionConnectionAccount	connection		= new FimFictionConnectionAccount();
+	private final FimFictionConnectionAccount	connection;
+	
+	public Main(final IWebProvider web) {
+		connection = new FimFictionConnectionAccount(web);
+	}
 	
 	public static void main(String[] args) {
-		Main m = new Main();
+		Main m = new Main(new StandardInternetProvider());
 		if(args.length == 2)
 			m.connection.login(args[0], args[1]);
 		m.run();
