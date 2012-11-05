@@ -24,8 +24,10 @@ public class MainScreen extends JPanel {
 	private final JMenuBar			menubar;
 	private final JTabbedPane		tabs;
 	private final DownloadManager	dlManager			= new DownloadManager();
+	private final EpubServer		server;
 	
 	public MainScreen(final FimFictionConnectionAccount ffc, final Main main) {
+		server = new EpubServer(dlManager);
 		setLayout(new BorderLayout());
 		{
 			menubar = new JMenuBar();
@@ -87,7 +89,7 @@ public class MainScreen extends JPanel {
 			{
 				final JMenuItem targetDir = new JMenuItem(new AbstractAction() {
 					private static final long	serialVersionUID	= 1L;
-
+					
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						final JFileChooser jf = new JFileChooser(dlManager.getDownloadDirectory());
@@ -126,6 +128,7 @@ public class MainScreen extends JPanel {
 			tabs.addTab("Unread", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), ffc, false, dlManager));
 			tabs.addTab("Read Later", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false, dlManager));
 			tabs.addTab("Downloads", new DownloadList(dlManager));
+			tabs.addTab("EPUB Server", new EpubServerConfig(server));
 			tabs.setVisible(true);
 			add(tabs);
 		}
