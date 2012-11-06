@@ -60,6 +60,34 @@ public class DownloadManager {
 		});
 	}
 	
+	public void downloadImmediatly(final Story story, final IFimFictionConnection ffc, final EnumDownloadType downloadType) {
+		final File dir = downloadDir;
+		final Collection<IDownloadUpdate> listeners = new HashSet<>();
+		for(final IDownloadListener dl : this.listeners)
+			if(dl != null) {
+				final IDownloadUpdate du = dl.getDownloadUpdate(story);
+				if(dl != null)
+					listeners.add(du);
+			}
+		try {
+			if(!dir.exists())
+				dir.mkdirs();
+			if(story.getTitle() == null)
+				Stories.updateStory(story, ffc);
+			final OutputStream fo = new FileOutputStream(new File(dir, story.getTitle().replaceAll("[^\\w ]", "") + '.' + downloadType.getFileType()));
+			Stories.downloadStory(story, fo, downloadType, ffc, new IDownloadUpdate() {
+				@Override
+				public void setProgress(float progress) {
+					for(IDownloadUpdate du : listeners)
+						du.setProgress(progress);
+				}
+			});
+			fo.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void addListener(final IDownloadListener listener) {
 		listeners.add(listener);
 	}

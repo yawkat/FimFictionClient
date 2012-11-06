@@ -7,12 +7,6 @@ import java.net.InetSocketAddress;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
-import org.jsoup.select.Elements;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -47,26 +41,25 @@ public class EpubServer {
 								arg0.sendResponseHeaders(404, -1);
 							} else {
 								final InputStream is = zf.getInputStream(ze);
-								if(!useCustomStylesheet || (!name.endsWith(".html") && !name.endsWith(".htm"))) {
+								if(useCustomStylesheet && name.endsWith(".css")) {
+									final String css = "\nbody{max-width:60em;margin:auto}p{font-size:1.2em!important;font-family:Verdana,Arial,sans-serif!important}";
+									arg0.sendResponseHeaders(200, ze.getSize() + css.length());
+									final byte[] buf = new byte[1024];
+									int length;
+									while((length = is.read(buf)) > 0)
+										arg0.getResponseBody().write(buf, 0, length);
+									for(final char c : css.toCharArray())
+										arg0.getResponseBody().write(c);
+									arg0.close();
+								} else {
 									arg0.sendResponseHeaders(200, ze.getSize());
 									final byte[] buf = new byte[1024];
 									int length;
 									while((length = is.read(buf)) > 0)
 										arg0.getResponseBody().write(buf, 0, length);
-								} else {
-									final Document d = Jsoup.parse(is, "UTF-8", "/");
-									final Elements e = d.getElementsByTag("head");
-									if(e.size() > 0) {
-										final Element e1 = e.first();
-										final Element style = new Element(Tag.valueOf("style"), "/");
-										style.attr("type", "text/css");
-										style.appendText("body{max-width:60em;margin:auto}p{font-size:1.2em!important;font-family:Verdana,Arial,sans-serif!important}");
-										e1.appendChild(style);
-									}
-									arg0.sendResponseHeaders(200, d.toString().getBytes().length);
-									arg0.getResponseBody().write(d.toString().getBytes());
+									arg0.close();
 								}
-								arg0.close();
+								is.close();
 							}
 							zf.close();
 						} catch(Exception e) {

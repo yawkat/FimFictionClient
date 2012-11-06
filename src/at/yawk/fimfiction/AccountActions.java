@@ -20,11 +20,11 @@ public class AccountActions {
 		Util.clearStream(urlc.getInputStream());
 	}
 	
-	public static void toggleRead(final IFimFictionConnection ffc, final Chapter c) throws IOException {
+	public static boolean toggleRead(final IFimFictionConnection ffc, final Chapter c) throws IOException {
 		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_toggle_read.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("chapter=" + c.getId()).getBytes());
-		Util.clearStream(urlc.getInputStream());
+		return Util.readFully(urlc.getInputStream()).trim().endsWith("tick.png");
 	}
 	
 	public static void setLike(final IFimFictionConnection ffc, final boolean isLike, final String token, final Story s) throws IOException {
@@ -47,5 +47,15 @@ public class AccountActions {
 	
 	public static void setLike(final IFimFictionConnection ffc, final boolean isLike, final Story s) throws IOException {
 		setLike(ffc, isLike, getLikeToken(ffc, s), s);
+	}
+	
+	public static boolean[] getHasRead(final IFimFictionConnection ffc, final Story s) throws IOException {
+		final Document d = Util.getHTML(ffc.getConnection(new URL(Util.FIMFICTION + "story/" + s.getId())));
+		final Elements chapters = d.getElementsByClass("chapters").get(0).getElementsByTag("li");
+		final boolean[] ab = new boolean[chapters.size() - 1];
+		for(int i = 0; i < ab.length; i++) {
+			ab[i] = chapters.get(i).getElementsByTag("img").get(3).attr("src").endsWith("tick.png");
+		}
+		return ab;
 	}
 }
