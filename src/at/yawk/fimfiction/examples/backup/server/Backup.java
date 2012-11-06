@@ -38,7 +38,24 @@ public class Backup implements Runnable {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
+		if(args.length == 1) {
+			final Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						TimeUnit.SECONDS.sleep(Long.parseLong(args[0]));
+						System.exit(0);
+					} catch(NumberFormatException e) {
+						
+					} catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			t.setDaemon(true);
+			t.start();
+		}
 		new Backup().run();
 	}
 	
