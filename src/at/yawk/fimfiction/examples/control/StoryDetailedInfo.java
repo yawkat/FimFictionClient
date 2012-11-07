@@ -46,7 +46,7 @@ public class StoryDetailedInfo extends JPanel {
 	private final DownloadManager		dlManager;
 	private final EpubServer			server;
 	
-	public StoryDetailedInfo(final Story story, final IFimFictionConnection connection, final DownloadManager dlManager, final EpubServer server) {
+	public StoryDetailedInfo(final Story story, final IFimFictionConnection connection, final DownloadManager dlManager, final EpubServer server, final Runnable back) {
 		this.dlManager = dlManager;
 		this.server = server;
 		this.connection = connection;
@@ -57,6 +57,20 @@ public class StoryDetailedInfo extends JPanel {
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 		
 		this.story = story;
+		
+		if(back != null) {
+			final JButton dl = new JButton();
+			dl.setAction(new AbstractAction() {
+				private static final long	serialVersionUID	= 1L;
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					back.run();
+				}
+			});
+			dl.setText("Back");
+			content.add(dl);
+		}
 		
 		title = new JLabel();
 		title.setFont(getFont().deriveFont(16F).deriveFont(Font.BOLD));
@@ -196,29 +210,10 @@ public class StoryDetailedInfo extends JPanel {
 	private void updateContent() {
 		title.setText("<html>" + story.getTitle() + "</html>");
 		description.setText("<html><p align='justify'>" + story.getDescription().replace("\n", "<br />") + "</p></html>");
-		boolean[] ab = new boolean[story.getChapters().length];
-		try {
-			ab = AccountActions.getHasRead(connection, story);
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		int index = 0;
 		for(final Chapter c : story.getChapters()) {
 			final JCheckBox hasRead = new JCheckBox();
 			hasRead.setMargin(new Insets(0, 0, 0, 0));
-			hasRead.setAction(new AbstractAction() {
-				private static final long	serialVersionUID	= 1L;
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					try {
-						hasRead.setSelected(AccountActions.toggleRead(connection, c));
-					} catch(IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			hasRead.setSelected(ab[index++]);
+			hasRead.setEnabled(false);
 			final JButton dl = new JButton();
 			dl.setMargin(new Insets(0, 0, 0, 0));
 			dl.setAction(new AbstractAction() {
@@ -243,7 +238,35 @@ public class StoryDetailedInfo extends JPanel {
 			});
 			dl.setText("Open");
 			chaptersModel.addRow(new Object[] { hasRead, dl, c.getTitle() });
-			
 		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					final boolean[] ab = AccountActions.getHasRead(connection, story);
+					for(int i = 0; i < ab.length; i++) {
+						final JCheckBox cb = ((JCheckBox)chaptersModel.getValueAt(i, 0));
+						cb.setEnabled(true);
+						cb.setSelected(ab[i]);
+						final int finalIndex = i;
+						cb.setAction(new AbstractAction() {
+							private static final long	serialVersionUID	= 1L;
+							
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								try {
+									cb.setSelected(AccountActions.toggleRead(connection, story.getChapters()[finalIndex]));
+								} catch(IOException e) {
+									e.printStackTrace();
+								}
+							}
+						});
+					}
+					repaint();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 }

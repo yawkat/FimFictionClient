@@ -53,9 +53,11 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 	private final boolean				partialLoading;
 	private final DownloadManager		dlManager;
 	private final IFimFictionConnection	connection;
+	private final EpubServer			server;
 	
-	public SearchDisplayTable(final String request, final IFimFictionConnection connection, final boolean partialLoading, final DownloadManager manager, final JMenuItem... additionalItems) {
+	public SearchDisplayTable(final String request, final IFimFictionConnection connection, final boolean partialLoading, final DownloadManager manager, final EpubServer server, final JMenuItem... additionalItems) {
 		this.dlManager = manager;
+		this.server = server;
 		this.connection = connection;
 		this.partialLoading = partialLoading;
 		mainPanel = new JTable(model = new DefaultTableModel() {
@@ -63,15 +65,7 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 			
 			@Override
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
-				return mColIndex == 2;
-			}
-			
-			@Override
-			public Class<?> getColumnClass(int c) {
-				if(c == 2) {
-					return JButton.class;
-				}
-				return super.getColumnClass(c);
+				return mColIndex >= 2;
 			}
 		});
 		mainPanel.setAutoCreateRowSorter(true);
@@ -84,6 +78,12 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 		{
 			final TableColumn tc = new TableColumn(1);
 			tc.setHeaderValue("Author");
+			mainPanel.addColumn(tc);
+			model.addColumn(tc.getHeaderValue());
+		}
+		{
+			final TableColumn tc = new TableColumn(2);
+			tc.setHeaderValue("");
 			mainPanel.addColumn(tc);
 			model.addColumn(tc.getHeaderValue());
 		}
@@ -158,7 +158,7 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 			}
 		});
 		
-		mainPanel.getColumnModel().getColumn(2).setMaxWidth(20);
+		mainPanel.getColumnModel().getColumn(2).setMaxWidth(30);
 		mainPanel.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable arg0, Object arg1, boolean arg2, boolean arg3, int arg4, int arg5) {
@@ -166,6 +166,15 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 			}
 		});
 		mainPanel.getColumnModel().getColumn(2).setCellEditor(new ButtonCellEdit());
+		
+		mainPanel.getColumnModel().getColumn(3).setMaxWidth(20);
+		mainPanel.getColumnModel().getColumn(3).setCellRenderer(new TableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable arg0, Object arg1, boolean arg2, boolean arg3, int arg4, int arg5) {
+				return (Component)arg1;
+			}
+		});
+		mainPanel.getColumnModel().getColumn(3).setCellEditor(new ButtonCellEdit());
 		
 		setVisible(true);
 	}
@@ -184,7 +193,25 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 					}
 				});
 				dl.setText("DL");
-				model.addRow(new Object[] { entry.getTitle(), entry.getAuthor().getName(), dl });
+				final JButton more = new JButton();
+				more.setMargin(new Insets(0, 0, 0, 0));
+				more.setAction(new AbstractAction() {
+					private static final long	serialVersionUID	= 1L;
+					
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						removeAll();
+						add(new StoryDetailedInfo(entry, connection, dlManager, server, new Runnable() {
+							@Override
+							public void run() {
+								removeAll();
+								add(scrollpane);
+							}
+						}));
+					}
+				});
+				more.setText("More");
+				model.addRow(new Object[] { entry.getTitle(), entry.getAuthor().getName(), more, dl });
 				tableContainingStories.add(entry);
 			}
 		}

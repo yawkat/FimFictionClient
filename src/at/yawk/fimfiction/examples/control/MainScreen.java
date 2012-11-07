@@ -123,10 +123,10 @@ public class MainScreen extends JPanel {
 					}
 				}
 			});
-			tabs.addTab("Search", new CustomSearch(ffc, dlManager));
-			tabs.addTab("Favorites", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).getRequest(), ffc, false, dlManager));
-			tabs.addTab("Unread", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), ffc, false, dlManager));
-			tabs.addTab("Read Later", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false, dlManager));
+			tabs.addTab("Search", new CustomSearch(ffc, dlManager, server));
+			tabs.addTab("Favorites", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).getRequest(), ffc, false, dlManager, server));
+			tabs.addTab("Unread", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), ffc, false, dlManager, server));
+			tabs.addTab("Read Later", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false, dlManager, server));
 			tabs.addTab("Downloads", new DownloadList(dlManager));
 			tabs.addTab("EPUB Server", new EpubServerConfig(server));
 			tabs.setVisible(true);

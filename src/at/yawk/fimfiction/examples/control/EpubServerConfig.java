@@ -18,10 +18,14 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class EpubServerConfig extends JPanel {
+public class EpubServerConfig extends JPanel implements ISelectionNotify {
 	private static final long	serialVersionUID	= 1L;
 	
+	private final EpubServer	server;
+	private final JButton		serverControl;
+	
 	public EpubServerConfig(final EpubServer server) {
+		this.server = server;
 		setLayout(new GridLayout(1, 1));
 		final JPanel jp = new JPanel();
 		jp.setLayout(new GridBagLayout());
@@ -29,7 +33,7 @@ public class EpubServerConfig extends JPanel {
 		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(sp);
-		final JButton serverControl = new JButton();
+		serverControl = new JButton();
 		serverControl.setAction(new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
 			
@@ -37,14 +41,14 @@ public class EpubServerConfig extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(server.running()) {
 					server.stop();
-					serverControl.setText("Start");
+					serverControl.setText(server.running() ? "Stop" : "Start");
 				} else {
 					server.start();
-					serverControl.setText("Stop");
+					serverControl.setText(server.running() ? "Stop" : "Start");
 				}
 			}
 		});
-		serverControl.setText("Start");
+		serverControl.setText(server.running() ? "Stop" : "Start");
 		final JSpinner port = new JSpinner(new SpinnerNumberModel(server.getPort(), 1, Short.MAX_VALUE, 1));
 		port.setEditor(new JSpinner.NumberEditor(port, "#"));
 		port.addChangeListener(new ChangeListener() {
@@ -58,6 +62,7 @@ public class EpubServerConfig extends JPanel {
 		final JCheckBox customStyle = new JCheckBox();
 		customStyle.setAction(new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				server.setUseCustomStylesheet(!server.useCustomStylesheet());
@@ -83,4 +88,12 @@ public class EpubServerConfig extends JPanel {
 		gbc.insets = new Insets(2, 2, 2, 2);
 		return gbc;
 	}
+	
+	@Override
+	public void select() {
+		serverControl.setText(server.running() ? "Stop" : "Start");
+	}
+	
+	@Override
+	public void deselect() {}
 }

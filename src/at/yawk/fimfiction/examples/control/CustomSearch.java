@@ -16,11 +16,13 @@ public class CustomSearch extends JPanel implements ISelectionNotify {
 	private static final long		serialVersionUID	= 1L;
 	private ISelectionNotify		childNotify			= null;
 	private final DownloadManager	dlManager;
+	private final EpubServer		server;
 	
-	public CustomSearch(final IFimFictionConnection connection, final DownloadManager dlManager) {
+	public CustomSearch(final IFimFictionConnection connection, final DownloadManager dlManager, final EpubServer server) {
 		setLayout(new GridLayout(1, 1));
 		displaySettings(connection);
 		this.dlManager = dlManager;
+		this.server = server;
 	}
 	
 	@Override
@@ -53,7 +55,7 @@ public class CustomSearch extends JPanel implements ISelectionNotify {
 					}
 				});
 				mi.setText("New Search");
-				add((Component)(childNotify = new SearchDisplayTable(Util.FIMFICTION + "index.php?" + builder.getRequest(), connection, true, dlManager, mi)));
+				add((Component)(childNotify = new SearchDisplayTable(Util.FIMFICTION + "index.php?" + builder.getRequest(), connection, true, dlManager, server, mi)));
 				select();
 			}
 		}));

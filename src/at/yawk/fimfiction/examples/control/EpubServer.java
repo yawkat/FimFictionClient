@@ -42,7 +42,7 @@ public class EpubServer {
 							} else {
 								final InputStream is = zf.getInputStream(ze);
 								if(useCustomStylesheet && name.endsWith(".css")) {
-									final String css = "\nbody{max-width:60em;margin:auto}p{font-size:1.2em!important;font-family:Verdana,Arial,sans-serif!important}";
+									final String css = "\nbody{max-width:60em;margin:auto}p{font-size:1.2em!important;font-family:Verdana,Arial,sans-serif!important;text-indent:3.0em;}";
 									arg0.sendResponseHeaders(200, ze.getSize() + css.length());
 									final byte[] buf = new byte[1024];
 									int length;
