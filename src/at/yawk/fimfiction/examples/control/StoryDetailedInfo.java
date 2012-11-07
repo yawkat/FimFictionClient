@@ -27,6 +27,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import at.yawk.fimfiction.AccountActions;
+import at.yawk.fimfiction.BBHelper;
 import at.yawk.fimfiction.Chapter;
 import at.yawk.fimfiction.EnumDownloadType;
 import at.yawk.fimfiction.IFimFictionConnection;
@@ -209,7 +210,7 @@ public class StoryDetailedInfo extends JPanel {
 	
 	private void updateContent() {
 		title.setText("<html>" + story.getTitle() + "</html>");
-		description.setText("<html><p align='justify'>" + story.getDescription().replace("\n", "<br />") + "</p></html>");
+		description.setText("<html><p align='justify'>" + BBHelper.bbToHtml(story.getDescription(), true) + "</p></html>");
 		for(final Chapter c : story.getChapters()) {
 			final JCheckBox hasRead = new JCheckBox();
 			hasRead.setMargin(new Insets(0, 0, 0, 0));
