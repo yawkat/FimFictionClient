@@ -1,5 +1,7 @@
 package at.yawk.fimfiction;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.EnumMap;
 
 public class SearchRequestBuilder {
@@ -116,57 +118,62 @@ public class SearchRequestBuilder {
 	}
 	
 	public String getRequest() {
-		final StringBuilder sb = new StringBuilder();
-		
-		sb.append("view=category");
-		
-		sb.append("&search=");
-		sb.append(searchTerm);
-		
-		sb.append("&order=");
-		sb.append(searchOrder.getSearchValue());
-		
-		for(final EnumCategory ec : EnumCategory.values()) {
-			final Boolean b = categories.get(ec);
-			sb.append('&');
-			sb.append(ec.getSearchValue());
-			sb.append('=');
-			sb.append(b == null ? "" : b.booleanValue() ? "1" : "2");
-		}
-		
-		sb.append("&content_rating=");
-		sb.append(contentRating.getSearchId());
-		
-		sb.append("&mature_categories=");
-		sb.append(matureCategories.getSearchId());
-		
-		if(mustBeCompleted)
-			sb.append("&completed=1");
-		
-		if(mustBeFavorite)
-			sb.append("&tracking");
-		
-		if(mustBeUnread)
-			sb.append("&unread");
-
-		if(mustBeReadLater)
-			sb.append("&read_it_later");
-		
-		sb.append("&minimum_words=");
-		sb.append(minimumWords == null ? "" : minimumWords);
-		
-		sb.append("&maximum_words=");
-		sb.append(maximumWords == null ? "" : maximumWords);
-		
-		for(final EnumCharacter ec : EnumCharacter.values()) {
-			final Boolean b = characters.get(ec);
-			if(b != null) {
-				sb.append(b.booleanValue() ? "&characters[]=" : "&characters_execluded[]=");
-				sb.append(ec.getId());
+		try {
+			final StringBuilder sb = new StringBuilder();
+			
+			sb.append("view=category");
+			
+			sb.append("&search=");
+			sb.append(URLEncoder.encode(searchTerm, "UTF-8"));
+			
+			sb.append("&order=");
+			sb.append(searchOrder.getSearchValue());
+			
+			for(final EnumCategory ec : EnumCategory.values()) {
+				final Boolean b = categories.get(ec);
+				sb.append('&');
+				sb.append(ec.getSearchValue());
+				sb.append('=');
+				sb.append(b == null ? "" : b.booleanValue() ? "1" : "2");
 			}
+			
+			sb.append("&content_rating=");
+			sb.append(contentRating.getSearchId());
+			
+			sb.append("&mature_categories=");
+			sb.append(matureCategories.getSearchId());
+			
+			if(mustBeCompleted)
+				sb.append("&completed=1");
+			
+			if(mustBeFavorite)
+				sb.append("&tracking");
+			
+			if(mustBeUnread)
+				sb.append("&unread");
+			
+			if(mustBeReadLater)
+				sb.append("&read_it_later");
+			
+			sb.append("&minimum_words=");
+			sb.append(minimumWords == null ? "" : minimumWords);
+			
+			sb.append("&maximum_words=");
+			sb.append(maximumWords == null ? "" : maximumWords);
+			
+			for(final EnumCharacter ec : EnumCharacter.values()) {
+				final Boolean b = characters.get(ec);
+				if(b != null) {
+					sb.append(b.booleanValue() ? "&characters[]=" : "&characters_execluded[]=");
+					sb.append(ec.getId());
+				}
+			}
+			
+			return sb.toString();
+		} catch(UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
-		
-		return sb.toString();
+		return null;
 	}
 	
 	public String toString() {
@@ -181,11 +188,11 @@ public class SearchRequestBuilder {
 		b &= (maximumWords == null || s.getWords() <= maximumWords);
 		return b;
 	}
-
+	
 	public boolean isMustBeReadLater() {
 		return mustBeReadLater;
 	}
-
+	
 	public SearchRequestBuilder setMustBeReadLater(boolean mustBeReadLater) {
 		this.mustBeReadLater = mustBeReadLater;
 		return this;

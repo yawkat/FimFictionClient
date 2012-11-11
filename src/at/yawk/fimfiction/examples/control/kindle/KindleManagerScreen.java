@@ -7,10 +7,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-
 import at.yawk.fimfiction.FimFictionConnectionAccount;
 import at.yawk.fimfiction.examples.control.DownloadManager;
 import at.yawk.kindle.Kindle;

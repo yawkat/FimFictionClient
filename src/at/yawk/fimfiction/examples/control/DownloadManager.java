@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -18,6 +20,7 @@ public class DownloadManager {
 	private EnumDownloadType					downloadType	= EnumDownloadType.EPUB;
 	private File								downloadDir		= new File("downloads");
 	private final Collection<IDownloadListener>	listeners		= new HashSet<>();
+	private final Map<String, Story>				stories			= new HashMap<>();
 	
 	public void setDownloadDirectory(final File dir) {
 		this.downloadDir = dir;
@@ -36,6 +39,7 @@ public class DownloadManager {
 				if(dl != null)
 					listeners.add(du);
 			}
+		stories.put(new File(dir, story.getTitle().replaceAll("[^\\w ]", "") + '.' + downloadType.getFileType()).getAbsolutePath(), story);
 		downloader.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -106,5 +110,9 @@ public class DownloadManager {
 	
 	public File getDownloadDirectory() {
 		return downloadDir;
+	}
+	
+	public Story getStoryForFile(final File f) {
+		return stories.get(f.getAbsolutePath());
 	}
 }
