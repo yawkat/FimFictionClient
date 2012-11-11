@@ -101,4 +101,8 @@ public class Kindle {
 		super.finalize();
 		saveSpecialDates();
 	}
+	
+	public File getKindleRoot() {
+		return kindleRoot;
+	}
 }

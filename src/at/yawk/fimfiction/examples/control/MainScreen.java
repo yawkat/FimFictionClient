@@ -18,6 +18,7 @@ import at.yawk.fimfiction.EnumDownloadType;
 import at.yawk.fimfiction.FimFictionConnectionAccount;
 import at.yawk.fimfiction.SearchRequestBuilder;
 import at.yawk.fimfiction.Util;
+import at.yawk.fimfiction.examples.control.kindle.KindleManagerScreen;
 
 public class MainScreen extends JPanel {
 	private static final long		serialVersionUID	= 1L;
@@ -129,6 +130,7 @@ public class MainScreen extends JPanel {
 			tabs.addTab("Read Later", new SearchDisplayTable(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), ffc, false, dlManager, server));
 			tabs.addTab("Downloads", new DownloadList(dlManager));
 			tabs.addTab("EPUB Server", new EpubServerConfig(server));
+			tabs.addTab("Kindle", new KindleManagerScreen(ffc, dlManager));
 			tabs.setVisible(true);
 			add(tabs);
 		}
