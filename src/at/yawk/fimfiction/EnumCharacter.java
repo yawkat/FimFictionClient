@@ -54,6 +54,7 @@ public enum EnumCharacter {
 	WONDERBOLTS(76, "Wonderbolts", "http://static.fimfiction.net/images/characters/wonderbolts.png", 64),
 	DIAMOND_DOGS(77, "Diamond Dogs", "http://static.fimfiction.net/images/characters/diamond_dogs.png", 64),
 	QUEEN_CHRYSALIS(78, "Queen Chrysalis", "http://static.fimfiction.net/images/characters/queen-chrysalis.png"),
+	KING_SOMBRA(83, "King Sombra", "http://static.fimfiction.net/images/characters/king-sombra.png"),
 	BIG_MACINTOSH(22, "Big Macintosh", "http://static.fimfiction.net/images/characters/big_mac.png"),
 	GRANNY_SMITH(23, "Granny Smith", "http://static.fimfiction.net/images/characters/granny_smith.png"),
 	BRAEBURN(24, "Braeburn", "http://static.fimfiction.net/images/characters/braeburn.png"),
