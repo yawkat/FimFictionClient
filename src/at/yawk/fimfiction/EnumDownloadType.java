@@ -13,4 +13,11 @@ public enum EnumDownloadType {
 	public String getFileType() {
 		return fileType;
 	}
+	
+	public static EnumDownloadType parse(String s) {
+		for(EnumDownloadType e : values())
+			if(e.fileType.equals(s))
+				return e;
+		return null;
+	}
 }

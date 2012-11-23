@@ -14,6 +14,7 @@ public class SearchRequestBuilder {
 	private Integer							minimumWords		= null;
 	private Integer							maximumWords		= null;
 	private EnumMap<EnumCharacter, Boolean>	characters			= new EnumMap<>(EnumCharacter.class);
+	
 	private boolean							mustBeUnread		= false;
 	private boolean							mustBeFavorite		= false;
 	private boolean							mustBeReadLater		= false;

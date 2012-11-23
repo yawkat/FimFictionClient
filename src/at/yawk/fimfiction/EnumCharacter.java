@@ -165,4 +165,11 @@ public enum EnumCharacter {
 	public static void setSpecialWebProvider(final IWebProvider web) {
 		webProvider = web;
 	}
+	
+	public static EnumCharacter parse(String s) {
+		for(EnumCharacter e : values())
+			if(e.toString().equals(s.toUpperCase()))
+				return e;
+		return null;
+	}
 }

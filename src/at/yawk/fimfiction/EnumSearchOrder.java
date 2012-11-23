@@ -24,4 +24,11 @@ public enum EnumSearchOrder {
 	public String toString() {
 		return toString;
 	}
+	
+	public static EnumSearchOrder parse(String s) {
+		for(EnumSearchOrder e : values())
+			if(e.searchValue.equals(s))
+				return e;
+		return null;
+	}
 }

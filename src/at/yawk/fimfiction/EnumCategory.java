@@ -28,4 +28,12 @@ public enum EnumCategory {
 	public String toString() {
 		return toString;
 	}
+	
+	public static EnumCategory parse(String s) {
+		s = "category_" + s;
+		for(EnumCategory e : values())
+			if(e.searchValue.equals(s))
+				return e;
+		return null;
+	}
 }

@@ -37,7 +37,7 @@ public class Main {
 				for(final Story s : c) {
 					System.out.println("Downloading (" + ++index + " of " + c.size() + ")");
 					Stories.updateStory(s, account);
-					Stories.downloadStory(s, new FileOutputStream(s.getTitle().replaceAll("\\W", "") + ".epub"), EnumDownloadType.EPUB, account);
+					Stories.downloadStory(s, new FileOutputStream(s.getTitle().replaceAll("[^\\w ]", "") + ".epub"), EnumDownloadType.EPUB, account);
 				}
 			} else {
 				System.err.println("Invalid account information.");

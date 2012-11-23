@@ -23,4 +23,17 @@ public enum EnumStoryMatureCategories {
 	public String toString() {
 		return toString;
 	}
+	
+	public static EnumStoryMatureCategories parse(final String s) {
+		switch(s) {
+		case "all":
+			return ALL;
+		case "sex":
+			return SEX;
+		case "gore":
+			return GORE;
+		default:
+			return null;
+		}
+	}
 }
