@@ -1,0 +1,5 @@
+Some of these files reuire the following libraries to run:
+xstream 1.4.3
+jsoup 1.7.1
+javamail 1.4.5
+apache commons (lang3) 3.1
