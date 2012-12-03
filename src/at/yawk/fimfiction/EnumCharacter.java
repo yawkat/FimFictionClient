@@ -24,6 +24,7 @@ public enum EnumCharacter {
 	SCOOTALOO(14, "Scootaloo", "http://static.fimfiction.net/images/characters/scootaloo.png"),
 	SWEETIE_BELLE(15, "Sweetie Belle", "http://static.fimfiction.net/images/characters/sweetie_belle.png"),
 	CUTIE_MARK_CRUSADERS(75, "Cutie Mark Crusaders", "http://static.fimfiction.net/images/characters/cmc.png", 64),
+	BABS_SEED(84, "Babs Seed", "http://www.fimfiction-static.net/images/characters/babs_seed.png"),
 	PRINCESS_CELESTIA(17, "Princess Celestia", "http://static.fimfiction.net/images/characters/celestia.png"),
 	PRINCESS_LUNA(18, "Princess Luna", "http://static.fimfiction.net/images/characters/princess_luna.png"),
 	NIGHTMARE_MOON(54, "Nightmare Moon", "http://static.fimfiction.net/images/characters/nightmare_moon.png"),
@@ -87,6 +88,7 @@ public enum EnumCharacter {
 	FLITTER_AND_CLOUDCHASER(80, "Flitter and Cloudchaser", "http://static.fimfiction.net/images/characters/flitter_and_cloudchaser.png"),
 	RUMBLE(81, "Rumble", "http://static.fimfiction.net/images/characters/rumble.png"),
 	ROSELUCK(82, "Roseluck", "http://static.fimfiction.net/images/characters/roseluck.png"),
+	CHANGELINGS(85, "Changelings", "http://www.fimfiction-static.net/images/characters/changelings.png"),
 	ORIGINAL_CHARACTER(49, "Original Character", "http://static.fimfiction.net/images/characters/oc.png"),
 	OTHER(62, "Other", "http://static.fimfiction.net/images/characters/other.png");
 	
