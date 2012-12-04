@@ -38,7 +38,9 @@ import at.yawk.fimfiction.EnumStoryMatureCategories;
 import at.yawk.fimfiction.SearchRequestBuilder;
 
 public class SearchBuilderDisplay extends JPanel {
-	private static final long	serialVersionUID	= 1L;
+	private static final long	serialVersionUID			= 1L;
+	
+	private static final byte	CHARACTER_SELECTION_ROWS	= 10;
 	
 	@SuppressWarnings("unchecked")
 	public SearchBuilderDisplay(final SearchRequestBuilder builder, final Runnable onSubmit) {
@@ -126,8 +128,8 @@ public class SearchBuilderDisplay extends JPanel {
 			for(int i = 0; i < characters.length; i++) {
 				characters[i] = new CharacterSelector(EnumCharacter.values()[i]);
 				final GridBagConstraints c = new GridBagConstraints();
-				c.gridx = pCounter % 9;
-				c.gridy = pCounter / 9;
+				c.gridx = pCounter % CHARACTER_SELECTION_ROWS;
+				c.gridy = pCounter / CHARACTER_SELECTION_ROWS;
 				pCounter += c.gridwidth = EnumCharacter.values()[i].getImageWidth() / 32;
 				c.gridheight = 1;
 				c.insets = new Insets(1, 1, 1, 1);
