@@ -225,7 +225,8 @@ public class StoryDetailedInfo extends JPanel {
 					final Desktop desktop = Desktop.getDesktop();
 					
 					if(desktop.isSupported(Desktop.Action.BROWSE)) {
-						if(!new File(dlManager.getDownloadDirectory(), story.getTitle().replaceAll("[^\\w ]", "") + "." + EnumDownloadType.EPUB.getFileType()).exists())
+						final File f = new File(dlManager.getDownloadDirectory(), story.getTitle().replaceAll("[^\\w ]", "") + "." + EnumDownloadType.EPUB.getFileType());
+						if(!f.exists() || f.lastModified() <= story.getModifyTime().getTime())
 							dlManager.downloadImmediatly(story, connection, EnumDownloadType.EPUB);
 						if(!server.running())
 							server.start();
