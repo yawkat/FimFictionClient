@@ -10,4 +10,4 @@ This is a simple java interface for FimFiction.net. Features:
 - Getting story metadata
 - Search URL building
 
-It also contains a fully-featured backup utility as an example that downloads all stories from FimFiction.net, with a simple display.
+It also contains various example applications I made for personal use, the biggest one being a fully-featured java GUI for fimfiction.net that can search, view favorites, view read later, contains a simple HTTP server for reading epubs in the browser and much more.
