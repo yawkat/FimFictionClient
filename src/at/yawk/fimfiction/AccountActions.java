@@ -52,7 +52,7 @@ public class AccountActions {
 	public static boolean[] getHasRead(final IFimFictionConnection ffc, final Story s) throws IOException {
 		final Document d = Util.getHTML(ffc.getConnection(new URL(Util.FIMFICTION + "story/" + s.getId())));
 		final Elements chapters = d.getElementsByClass("chapters").get(0).getElementsByClass("chapter_container");
-		final boolean[] ab = new boolean[chapters.size() - 1];
+		final boolean[] ab = new boolean[chapters.size()];
 		for(int i = 0; i < ab.length; i++) {
 			ab[i] = chapters.get(i).getElementsByTag("img").get(3).attr("src").endsWith("tick.png");
 		}
