@@ -7,21 +7,21 @@ import org.jsoup.select.Elements;
 
 public class AccountActions {
 	public static void markReadLater(final IFimFictionConnection ffc, final boolean readLater, final Story s) throws IOException {
-		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_read_it_later.php"));
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax/add_read_it_later.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("story=" + s.getId() + "&selected=" + (readLater ? 1 : 0)).getBytes());
 		Util.clearStream(urlc.getInputStream());
 	}
 	
 	public static void markFavorite(final IFimFictionConnection ffc, final boolean favorite, final boolean email, final Story s) throws IOException {
-		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_add_favourite.php"));
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax/add_favourite.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("story=" + s.getId() + "&selected=" + (favorite ? 1 : 0) + "&email=" + (email ? 1 : 0)).getBytes());
 		Util.clearStream(urlc.getInputStream());
 	}
 	
 	public static boolean toggleRead(final IFimFictionConnection ffc, final Chapter c) throws IOException {
-		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax_toggle_read.php"));
+		final IURLConnection urlc = ffc.getConnection(new URL(Util.FIMFICTION + "ajax/toggle_read.php"));
 		urlc.connect();
 		urlc.getOutputStream().write(("chapter=" + c.getId()).getBytes());
 		return Util.readFully(urlc.getInputStream()).trim().endsWith("tick.png");
@@ -51,7 +51,7 @@ public class AccountActions {
 	
 	public static boolean[] getHasRead(final IFimFictionConnection ffc, final Story s) throws IOException {
 		final Document d = Util.getHTML(ffc.getConnection(new URL(Util.FIMFICTION + "story/" + s.getId())));
-		final Elements chapters = d.getElementsByClass("chapters").get(0).getElementsByTag("li");
+		final Elements chapters = d.getElementsByClass("chapters").get(0).getElementsByClass("chapter_container");
 		final boolean[] ab = new boolean[chapters.size() - 1];
 		for(int i = 0; i < ab.length; i++) {
 			ab[i] = chapters.get(i).getElementsByTag("img").get(3).attr("src").endsWith("tick.png");

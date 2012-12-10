@@ -36,7 +36,7 @@ public class FimFictionConnectionAccount implements IFimFictionConnection {
 	
 	public boolean login(final String username, final String password) {
 		try {
-			final IURLConnection urlc = web.getConnection(new URL(Util.FIMFICTION + "ajax_login.php"));
+			final IURLConnection urlc = web.getConnection(new URL(Util.FIMFICTION + "ajax/login.php"));
 			urlc.connect();
 			urlc.getOutputStream().write(("username=" + username + "&password=" + password).getBytes());
 			urlc.getOutputStream().flush();
