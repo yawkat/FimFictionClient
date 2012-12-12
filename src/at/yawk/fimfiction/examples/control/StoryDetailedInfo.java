@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
@@ -232,7 +231,7 @@ public class StoryDetailedInfo extends JPanel {
 							server.start();
 						try {
 							desktop.browse(new URI("http://127.0.0.1:" + server.getPort() + "/" + story.getTitle().replaceAll("[^\\w ]", "").replace(" ", "%20") + '.' + EnumDownloadType.EPUB.getFileType() + "/Chapter" + (c.getStoryIndex() + 1) + ".html"));
-						} catch(IOException | URISyntaxException e) {
+						} catch(Exception e) {
 							e.printStackTrace();
 						}
 					}

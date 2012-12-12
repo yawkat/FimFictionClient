@@ -24,7 +24,7 @@ public class KindleFactory {
 	}
 	
 	public static Kindle[] getAllRootConnectedKindles() {
-		final List<Kindle> kindles = new ArrayList<>();
+		final List<Kindle> kindles = new ArrayList<Kindle>();
 		for(final File f : File.listRoots()) {
 			final Kindle k = getKindleForFolder(f);
 			if(k != null)

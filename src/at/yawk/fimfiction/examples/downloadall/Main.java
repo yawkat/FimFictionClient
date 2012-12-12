@@ -28,7 +28,7 @@ public class Main {
 		if(args.length == 2) {
 			final FimFictionConnectionAccount account = new FimFictionConnectionAccount();
 			if(account.login(args[0], args[1])) {
-				final Collection<Story> c = new ArrayList<>();
+				final Collection<Story> c = new ArrayList<Story>();
 				System.out.println("Checking unread favorites...");
 				c.addAll(Arrays.asList(Searches.parseFullSearch(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), account)));
 				System.out.println("Checking read later...");

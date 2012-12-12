@@ -49,7 +49,7 @@ public class SearchBuilderDisplay extends JPanel {
 		final JTextField searchString = addAndStandardText(new JTextField(), "Search string");
 		final JComboBox<EnumSearchOrder> searchOrder;
 		{
-			searchOrder = new JComboBox<>(EnumSearchOrder.values());
+			searchOrder = new JComboBox<EnumSearchOrder>(EnumSearchOrder.values());
 			final JLabel jl = new JLabel("Search Order");
 			jl.setLabelFor(searchOrder);
 			add(jl, createConstraints(1, 0, false));
@@ -146,13 +146,13 @@ public class SearchBuilderDisplay extends JPanel {
 					if(!greys.get(searchString).get())
 						builder.setSearchTerm(searchString.getText());
 					builder.setSearchOrder((EnumSearchOrder)searchOrder.getSelectedItem());
-					final EnumMap<EnumCharacter, Boolean> charactersMap = new EnumMap<>(EnumCharacter.class);
+					final EnumMap<EnumCharacter, Boolean> charactersMap = new EnumMap<EnumCharacter, Boolean>(EnumCharacter.class);
 					for(final CharacterSelector cs : characters) {
 						if(cs.isSelected != null)
 							charactersMap.put(cs.character, cs.isSelected);
 					}
 					builder.setCharacters(charactersMap);
-					final EnumMap<EnumCategory, Boolean> categoryMap = new EnumMap<>(EnumCategory.class);
+					final EnumMap<EnumCategory, Boolean> categoryMap = new EnumMap<EnumCategory, Boolean>(EnumCategory.class);
 					for(int i = 0; i < categories.length; i++) {
 						if(categories[i].getSelectedIndex() > 0)
 							categoryMap.put(EnumCategory.values()[i], categories[i].getSelectedIndex() == 1);
@@ -207,7 +207,7 @@ public class SearchBuilderDisplay extends JPanel {
 		return textField;
 	}
 	
-	private final Map<JTextField, AtomicBoolean>	greys		= new HashMap<>();
+	private final Map<JTextField, AtomicBoolean>	greys		= new HashMap<JTextField, AtomicBoolean>();
 	
 	private static BufferedImage					selected	= null;
 	private static BufferedImage					unselected	= null;

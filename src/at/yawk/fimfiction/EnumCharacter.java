@@ -99,7 +99,7 @@ public enum EnumCharacter {
 	private final String			imageUrl;
 	private BufferedImage			image			= null;
 	private boolean					isLoadingImage	= false;
-	private final Set<Runnable>		onFinishLoad	= new HashSet<>();
+	private final Set<Runnable>		onFinishLoad	= new HashSet<Runnable>();
 	private final int				imageWidth;
 	
 	private EnumCharacter(final int id, final String displayName, final String imageUrl) {

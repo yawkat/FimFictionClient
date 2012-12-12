@@ -47,8 +47,14 @@ public final class Stories {
 		if(nxt.has("story")) {
 			final JSONObject jso = ((JSONObject)nxt).getJSONObject("story");
 			s.setTitle(jso.getString("title"));
-			s.setShortDescription(jso.getString("short_description"));
-			s.setDescription(jso.getString("description"));
+			try {
+				s.setShortDescription(jso.getString("short_description"));
+				s.setDescription(jso.getString("description"));
+			} catch(JSONException j) {
+				// Tends to happen from time to time, not sure why.
+				s.setShortDescription("");
+				s.setDescription("");
+			}
 			s.setModifyTime(new Date(jso.getLong("date_modified") * 1000L));
 			if(jso.has("image"))
 				s.setImageLocation(jso.getString("image"));

@@ -54,7 +54,7 @@ public class EpubServerConfig extends JPanel implements ISelectionNotify {
 		port.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				server.setPort((int)port.getValue());
+				server.setPort((Integer)port.getValue());
 			}
 		});
 		jp.add(serverControl, createConstraints(2, 0, true));
@@ -72,6 +72,21 @@ public class EpubServerConfig extends JPanel implements ISelectionNotify {
 		customStyle.setSelected(server.useCustomStylesheet());
 		jp.add(new JLabel("Custom Stylesheet"), createConstraints(1, 0, false));
 		jp.add(customStyle, createConstraints(1, 1, true));
+		
+
+		final JCheckBox fixHTML = new JCheckBox();
+		fixHTML.setAction(new AbstractAction() {
+			private static final long	serialVersionUID	= 1L;
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				server.setFixHTML(!server.fixHTML());
+				fixHTML.setSelected(server.fixHTML());
+			}
+		});
+		fixHTML.setSelected(server.fixHTML());
+		jp.add(new JLabel("Fix HTML"), createConstraints(1, 0, false));
+		jp.add(fixHTML, createConstraints(1, 1, true));
 	}
 	
 	private int	ycounter	= 0;

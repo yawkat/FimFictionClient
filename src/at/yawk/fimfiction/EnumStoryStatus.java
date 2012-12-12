@@ -4,17 +4,15 @@ public enum EnumStoryStatus {
 	COMPLETE, INCOMPLETE, ON_HIATUS, CANCELLED;
 	
 	public static EnumStoryStatus parse(final String s) {
-		switch(s.toLowerCase()) {
-		case "complete":
+		final int t = s.toLowerCase().hashCode();
+		if(t == "complete".hashCode())
 			return COMPLETE;
-		case "incomplete":
+		if(t == "incomplete".hashCode())
 			return INCOMPLETE;
-		case "on hiatus":
+		if(t == "on hiatus".hashCode())
 			return ON_HIATUS;
-		case "cancelled":
+		if(t == "cancelled".hashCode())
 			return CANCELLED;
-		default:
-			return null;
-		}
+		return null;
 	}
 }

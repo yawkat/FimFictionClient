@@ -147,7 +147,7 @@ public class Main implements Runnable {
 									dateAccess.setStoryForIndex(s.getId(), u = updateStory(t));
 									if(t.getModifyTime() != null && u.getModifyTime().getTime() == t.getModifyTime().getTime())
 										break;
-								} catch(IOException | JSONException e) {
+								} catch(Exception e) {
 									logException(Level.WARNING, e);
 								}
 							}
@@ -167,7 +167,7 @@ public class Main implements Runnable {
 				final Executor e = Executors.newFixedThreadPool(10);
 				while(true) {
 					try {
-						final Collection<Story> c = new ArrayList<>(dateAccess.getAllStoriesInMemory());
+						final Collection<Story> c = new ArrayList<Story>(dateAccess.getAllStoriesInMemory());
 						for(final Story s : c) {
 							if(s.getModifyTime() == null || s.getModifyTime().getTime() == 0)
 								e.execute(new Runnable() {
@@ -176,7 +176,7 @@ public class Main implements Runnable {
 										runningDownloaders.incrementAndGet();
 										try {
 											dateAccess.setStoryForIndex(s.getId(), updateStory(s));
-										} catch(IOException | JSONException e) {
+										} catch(Exception e) {
 											e.printStackTrace();
 										} finally {
 											runningDownloaders.decrementAndGet();

@@ -7,15 +7,21 @@ import java.net.InetSocketAddress;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import at.yawk.fimfiction.Util;
+import at.yawk.util.httpserver.HttpServerFactory;
+import at.yawk.util.httpserver.IHttpExchange;
+import at.yawk.util.httpserver.IHttpHandler;
+import at.yawk.util.httpserver.IHttpServer;
 
 public class EpubServer {
 	private final DownloadManager	dlManager;
-	private HttpServer				hs;
+	private IHttpServer				hs;
 	private int						port				= 8080;
 	private boolean					useCustomStylesheet	= true;
+	private boolean					fixHTML				= true;
 	
 	public EpubServer(final DownloadManager dlManager) {
 		this.dlManager = dlManager;
@@ -23,10 +29,10 @@ public class EpubServer {
 	
 	public void start() {
 		try {
-			hs = HttpServer.create(new InetSocketAddress(port), 0);
-			hs.createContext("/", new HttpHandler() {
+			hs = HttpServerFactory.createStandardHTTPServer(new InetSocketAddress(port));
+			hs.createContext("/", new IHttpHandler() {
 				@Override
-				public void handle(HttpExchange arg0) throws IOException {
+				public void handle(IHttpExchange arg0) throws IOException {
 					String loc = arg0.getRequestURI().toString().substring(1);
 					loc = loc.substring(0, loc.indexOf('/')).replace("%20", " ");
 					final File f = new File(dlManager.getDownloadDirectory(), loc);
@@ -52,11 +58,15 @@ public class EpubServer {
 										arg0.getResponseBody().write(c);
 									arg0.close();
 								} else {
-									arg0.sendResponseHeaders(200, ze.getSize());
-									final byte[] buf = new byte[1024];
-									int length;
-									while((length = is.read(buf)) > 0)
-										arg0.getResponseBody().write(buf, 0, length);
+									if(fixHTML && name.endsWith(".html")) {
+										final Document d = Jsoup.parse(is, "UTF-8", "/");
+										final byte[] by = d.toString().getBytes("UTF-8");
+										arg0.sendResponseHeaders(200, by.length);
+										arg0.getResponseBody().write(by);
+									} else {
+										arg0.sendResponseHeaders(200, ze.getSize());
+										Util.copyStream(is, arg0.getResponseBody());
+									}
 									arg0.close();
 								}
 								is.close();
@@ -99,5 +109,13 @@ public class EpubServer {
 	
 	public void setUseCustomStylesheet(final boolean useCustomStylesheet) {
 		this.useCustomStylesheet = useCustomStylesheet;
+	}
+	
+	public boolean fixHTML() {
+		return fixHTML;
+	}
+	
+	public void setFixHTML(final boolean fixHTML) {
+		this.fixHTML = fixHTML;
 	}
 }

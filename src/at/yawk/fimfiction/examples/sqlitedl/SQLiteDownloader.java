@@ -1,8 +1,13 @@
 package at.yawk.fimfiction.examples.sqlitedl;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONException;
@@ -32,13 +39,15 @@ import at.yawk.fimfiction.Stories;
 import at.yawk.fimfiction.Story;
 import at.yawk.fimfiction.Util;
 
+@SuppressWarnings("unused")
 public class SQLiteDownloader implements Runnable {
 	public static void main(String[] args) {
 		new SQLiteDownloader().run();
 	}
 	
 	private Connection					databaseConnection;
-	private Lock						connectionLock			= new ReentrantLock();
+	private final Lock					connectionLock			= new ReentrantLock();
+	private final Object				getLock					= new Object();
 	
 	private final File					storyDownloadDirectory	= new File("data");
 	private final IFimFictionConnection	connection				= new FimFictionConnectionStandard();
@@ -57,42 +66,21 @@ public class SQLiteDownloader implements Runnable {
 	public void run() {
 		System.out.println("Starting");
 		connect();
+		autoDisconnect();
+		
 		try {
 			createTables();
 		} catch(SQLException e1) {
 			e1.printStackTrace();
 		}
-		
-		final int maxId = Searches.parseFullSearchPartially(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.FIRST_POSTED_DATE), connection, 0).next().getId() + 1000;
-		
-		final Executor ex = Executors.newFixedThreadPool(40);
-		final AtomicInteger ai = new AtomicInteger();
-		for(int i = 0; i < maxId; i++) {
-			final int index = i;
-			ai.incrementAndGet();
-			ex.execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						updateStory(new Story(index));
-					} catch(SQLException | IOException | JSONException e) {
-						e.printStackTrace();
-					} finally {
-						ai.decrementAndGet();
-					}
-				}
-			});
+		//continueUpdateStories();
+		try {
+			//dumpDatabase(true, new FileOutputStream("db.dmp"));
+			loadFiles(new FileInputStream("db.dmp"));
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		
-		while(ai.get() > 0) {
-			try {
-				TimeUnit.SECONDS.sleep(2);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		disconnect();
 		System.out.println("Stopping");
 		System.exit(0);
 	}
@@ -108,6 +96,15 @@ public class SQLiteDownloader implements Runnable {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void autoDisconnect() {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
+			public void run() {
+				disconnect();
+			}
+		}));
 	}
 	
 	private void disconnect() {
@@ -213,10 +210,166 @@ public class SQLiteDownloader implements Runnable {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private void truncateDB() throws SQLException {
 		databaseConnection.createStatement().execute("DELETE FROM stories");
 		databaseConnection.createStatement().execute("DELETE FROM chapters");
 		databaseConnection.createStatement().execute("DELETE FROM authors");
+	}
+	
+	private void continueUpdateStories() {
+		final int maxId = Searches.parseFullSearchPartially(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.FIRST_POSTED_DATE), connection, 0).next().getId() + 1000;
+		
+		final Executor ex = Executors.newFixedThreadPool(4);
+		final AtomicInteger ai = new AtomicInteger();
+		for(int i = maxId; i > 0; i--) {
+			final int index = i;
+			ai.incrementAndGet();
+			ex.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						updateStory(new Story(index));
+					} catch(Exception e) {
+						e.printStackTrace();
+					} finally {
+						ai.decrementAndGet();
+					}
+				}
+			});
+		}
+		
+		while(ai.get() > 0) {
+			try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void dumpDatabase(final boolean dumpEpub, final OutputStream os) throws SQLException, IOException {
+		System.out.println("Dumping");
+		final DataOutputStream out = new DataOutputStream(os);
+		final ResultSet stories = databaseConnection.createStatement().executeQuery("SELECT * FROM stories");
+		while(stories.next()) {
+			out.write(1);
+			out.writeInt(stories.getInt("id"));
+			out.writeInt(stories.getInt("storyid"));
+			out.writeUTF(nullToEmptyString(stories.getString("description")));
+			out.writeUTF(nullToEmptyString(stories.getString("shortdescription")));
+			out.writeUTF(nullToEmptyString(stories.getString("title")));
+			out.writeLong(stories.getDate("modifytime").getTime());
+			out.writeUTF(nullToEmptyString(stories.getString("imagelocation")));
+			out.writeUTF(nullToEmptyString(stories.getString("fullimagelocation")));
+			out.writeInt(stories.getInt("views"));
+			out.writeInt(stories.getInt("totalviews"));
+			out.writeInt(stories.getInt("comments"));
+			out.writeInt(stories.getInt("authorid"));
+			out.writeUTF(nullToEmptyString(stories.getString("contentrating")));
+			out.writeInt(stories.getInt("likes"));
+			out.writeInt(stories.getInt("dislikes"));
+			out.writeInt(stories.getInt("words"));
+			out.writeUTF(nullToEmptyString(stories.getString("filename")));
+			out.writeBoolean(dumpEpub);
+			if(dumpEpub) {
+				final File f = new File(storyDownloadDirectory, stories.getString("filename"));
+				out.writeLong(f.length());
+				final InputStream is = new FileInputStream(f);
+				Util.copyStream(is, out);
+				is.close();
+			}
+		}
+		
+		final ResultSet chapters = databaseConnection.createStatement().executeQuery("SELECT * FROM chapters");
+		while(chapters.next()) {
+			out.write(2);
+			out.writeInt(chapters.getInt("id"));
+			out.writeInt(chapters.getInt("updateid"));
+			out.writeInt(chapters.getInt("chapterid"));
+			out.writeInt(chapters.getInt("storyindex"));
+			out.writeUTF(nullToEmptyString(chapters.getString("title")));
+			out.writeInt(chapters.getInt("words"));
+			out.writeInt(chapters.getInt("views"));
+			out.writeLong(chapters.getDate("modifytime").getTime());
+		}
+		
+		final ResultSet authors = databaseConnection.createStatement().executeQuery("SELECT * FROM authors");
+		while(authors.next()) {
+			out.write(3);
+			out.writeInt(authors.getInt("id"));
+			out.writeInt(authors.getInt("authorid"));
+			out.writeUTF(nullToEmptyString(authors.getString("name")));
+		}
+		System.out.println("Dumped!");
+	}
+	
+	private void loadFiles(final InputStream is) throws IOException, SQLException {
+		final DataInputStream in = new DataInputStream(is);
+		while(true) {
+			final int next = in.read();
+			if(next < 0) {
+				break;
+			} else if(next == 1) {
+				final PreparedStatement prepared = databaseConnection.prepareStatement("INSERT INTO stories (storyid, description, shortdescription, title, modifytime, imagelocation, fullimagelocation, views, totalviews, comments, authorid, status, contentrating, likes, dislikes, words, filename) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				int index = 1;
+				// old DB ID, unused
+				in.readInt();
+				
+				prepared.setInt(index++, in.readInt());
+				prepared.setString(index++, in.readUTF());
+				prepared.setString(index++, in.readUTF());
+				prepared.setString(index++, in.readUTF());
+				prepared.setDate(index++, new Date(in.readLong()));
+				prepared.setString(index++, in.readUTF());
+				prepared.setString(index++, in.readUTF());
+				prepared.setInt(index++, in.readInt());
+				prepared.setInt(index++, in.readInt());
+				prepared.setInt(index++, in.readInt());
+				prepared.setInt(index++, in.readInt());
+				prepared.setString(index++, in.readUTF());
+				prepared.setInt(index++, in.readInt());
+				prepared.setInt(index++, in.readInt());
+				prepared.setInt(index++, in.readInt());
+				final String fname = in.readUTF();
+				prepared.setString(index++, fname);
+				if(in.readBoolean()) {
+					long remainingBytes = in.readLong();
+					final OutputStream os = new FileOutputStream(new File(storyDownloadDirectory, fname));
+					final byte[] tmp = new byte[1024];
+					while(remainingBytes > 0) {
+						final int read = (int)Math.min(tmp.length, remainingBytes);
+						remainingBytes -= read;
+						in.read(tmp, 0, read);
+						os.write(tmp, 0, read);
+					}
+					os.close();
+				}
+			} else if(next == 2) {
+				final PreparedStatement cprepared = databaseConnection.prepareStatement("INSERT INTO chapters (updateid, chapterid, storyindex, title, words, views, modifytime) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				int index = 1;
+				// old DB ID, unused
+				in.readInt();
+				
+				cprepared.setInt(index++, in.readInt());
+				cprepared.setInt(index++, in.readInt());
+				cprepared.setInt(index++, in.readInt());
+				cprepared.setString(index++, in.readUTF());
+				cprepared.setInt(index++, in.readInt());
+				cprepared.setInt(index++, in.readInt());
+				cprepared.setDate(index++, new Date(in.readLong()));
+				cprepared.execute();
+			} else if(next == 3) {
+				// old DB ID, unused
+				in.readInt();
+				final PreparedStatement aprepared = databaseConnection.prepareStatement("INSERT INTO authors (authorid, name) VALUES (?, ?)");
+				aprepared.setInt(1, in.readInt());
+				aprepared.setString(2, in.readUTF());
+				aprepared.execute();
+			}
+		}
+	}
+	
+	private String nullToEmptyString(String s) {
+		return s == null ? "" : s;
 	}
 }

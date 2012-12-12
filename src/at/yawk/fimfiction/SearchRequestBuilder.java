@@ -7,13 +7,13 @@ import java.util.EnumMap;
 public class SearchRequestBuilder {
 	private String							searchTerm			= "";
 	private EnumSearchOrder					searchOrder			= EnumSearchOrder.FIRST_POSTED_DATE;
-	private EnumMap<EnumCategory, Boolean>	categories			= new EnumMap<>(EnumCategory.class);
+	private EnumMap<EnumCategory, Boolean>	categories			= new EnumMap<EnumCategory, Boolean>(EnumCategory.class);
 	private EnumStoryContentRating			contentRating		= EnumStoryContentRating.ALL;
 	private EnumStoryMatureCategories		matureCategories	= EnumStoryMatureCategories.ALL;
 	private boolean							mustBeCompleted		= false;
 	private Integer							minimumWords		= null;
 	private Integer							maximumWords		= null;
-	private EnumMap<EnumCharacter, Boolean>	characters			= new EnumMap<>(EnumCharacter.class);
+	private EnumMap<EnumCharacter, Boolean>	characters			= new EnumMap<EnumCharacter, Boolean>(EnumCharacter.class);
 	
 	private boolean							mustBeUnread		= false;
 	private boolean							mustBeFavorite		= false;

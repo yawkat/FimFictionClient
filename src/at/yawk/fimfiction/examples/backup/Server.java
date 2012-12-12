@@ -21,10 +21,11 @@ import at.yawk.fimfiction.SearchRequestBuilder;
 import at.yawk.fimfiction.Story;
 import at.yawk.fimfiction.Util;
 import at.yawk.fimfiction.XMLHelper;
+import at.yawk.util.httpserver.HttpServerFactory;
+import at.yawk.util.httpserver.IHttpExchange;
+import at.yawk.util.httpserver.IHttpHandler;
+import at.yawk.util.httpserver.IHttpServer;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 import com.thoughtworks.xstream.XStream;
 
 public class Server implements Runnable {
@@ -52,18 +53,17 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 		try {
-			final HttpServer hs = HttpServer.create(new InetSocketAddress(8080), 0);
-			hs.createContext("/", new HttpHandler() {
-				
+			final IHttpServer hs = HttpServerFactory.createStandardHTTPServer(new InetSocketAddress(8080));
+			hs.createContext("/", new IHttpHandler() {
 				@Override
-				public void handle(HttpExchange he) throws IOException {
+				public void handle(IHttpExchange he) throws IOException {
 					try {
 						log("Requested " + he.getRequestURI());
 						if(he.getRequestURI().toString().equals("/")) {
 							String content = "";
 							final String post = Util.readFully(he.getRequestBody());
 							if(post.trim().length() > 0) {
-								final Map<String, String> p = new HashMap<>();
+								final Map<String, String> p = new HashMap<String, String>();
 								for(final String s : post.split("&")) {
 									final String[] t = s.split("=");
 									p.put(t[0], t.length == 1 ? "" : t[1]);

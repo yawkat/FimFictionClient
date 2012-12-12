@@ -107,7 +107,7 @@ public class CMDSearch implements Runnable {
 			final PrintWriter pw = new PrintWriter(new File(outputDir, "0000 - stories.txt"));
 			try {
 				final Iterator<Story> i = Searches.parseFullSearchPartially(Util.FIMFICTION + "index.php?" + request.getRequest(), connection, 0);
-				final BlockingQueue<Story> download = new LinkedBlockingQueue<>();
+				final BlockingQueue<Story> download = new LinkedBlockingQueue<Story>();
 				new Thread(new Runnable() {
 					@Override
 					public void run() {

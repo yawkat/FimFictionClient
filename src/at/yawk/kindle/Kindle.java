@@ -17,8 +17,8 @@ public class Kindle {
 	private final File					bookRoot;
 	private final File					kindleRoot;
 	
-	private final Map<String, Long>		specialModifyDate	= new HashMap<>();
-	private final Map<String, String>	realName			= new HashMap<>();
+	private final Map<String, Long>		specialModifyDate	= new HashMap<String, Long>();
+	private final Map<String, String>	realName			= new HashMap<String, String>();
 	
 	Kindle(final File kindleRootDir) {
 		bookRoot = new File(kindleRoot = kindleRootDir, "documents");

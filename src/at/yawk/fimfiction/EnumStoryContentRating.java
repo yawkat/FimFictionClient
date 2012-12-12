@@ -16,18 +16,16 @@ public enum EnumStoryContentRating {
 	}
 	
 	public static EnumStoryContentRating parse(final String s) {
-		switch(s.toLowerCase().trim()) {
-		case "all":
+		final int t = s.toLowerCase().trim().hashCode();
+		if(t == "all".hashCode())
 			return ALL;
-		case "everyone":
+		if(t == "everyone".hashCode())
 			return EVERYONE;
-		case "teen":
+		if(t == "teen".hashCode())
 			return TEEN;
-		case "mature":
+		if(t == "mature".hashCode())
 			return MATURE;
-		default:
-			return null;
-		}
+		return null;
 	}
 	
 	public boolean matches(EnumStoryContentRating e) {

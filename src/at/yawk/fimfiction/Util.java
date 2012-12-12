@@ -1,5 +1,6 @@
 package at.yawk.fimfiction;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,8 +10,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import at.yawk.fimfiction.examples.control.IDownloadUpdate;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public final class Util {
 	public static final String	FIMFICTION	= "http://www.fimfiction.net/";
@@ -43,9 +42,9 @@ public final class Util {
 	public static String readFully(final InputStream is) throws IOException {
 		final Scanner s = new Scanner(is);
 		try {
-			final ByteOutputStream bos = new ByteOutputStream();
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			copyStream(is, bos);
-			return new String(bos.getBytes());
+			return bos.toString();
 		} finally {
 			s.close();
 		}

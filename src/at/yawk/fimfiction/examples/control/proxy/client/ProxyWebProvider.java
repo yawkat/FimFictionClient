@@ -31,7 +31,7 @@ public class ProxyWebProvider implements IWebProvider {
 			private final DataOutputStream	out;
 			private boolean					hasConnected	= false;
 			private boolean					hasDoneWriting	= false;
-			private final List<String[]>	headers			= new ArrayList<>();
+			private final List<String[]>	headers			= new ArrayList<String[]>();
 			private long					contentLength;
 			private ByteArrayOutputStream	outputCache		= new ByteArrayOutputStream();
 			{

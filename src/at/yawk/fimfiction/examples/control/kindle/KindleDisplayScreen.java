@@ -236,7 +236,7 @@ class KindleDisplayScreen extends JPanel {
 										if(s.getTitle() == null)
 											try {
 												Stories.updateStory(s, connection);
-											} catch(IOException | JSONException e) {
+											} catch(Exception e) {
 												e.printStackTrace();
 											}
 										kindle.setSpecialModifyDate(targetTitle, s.getTitle(), s.getModifyTime().getTime());
@@ -277,7 +277,7 @@ class KindleDisplayScreen extends JPanel {
 	private void updateKindle() {
 		while(onKindleModel.getRowCount() > 0)
 			onKindleModel.removeRow(0);
-		final List<String[]> books = new ArrayList<>();
+		final List<String[]> books = new ArrayList<String[]>();
 		for(final String s : kindle.listBooks()) {
 			final int index = books.size();
 			final String realName = kindle.getRealBookName(s) == null ? s : kindle.getRealBookName(s);

@@ -29,7 +29,7 @@ public class DownloadList extends JPanel {
 	private final JScrollPane					scrollpane;
 	private final JTable						mainPanel;
 	private final DefaultTableModel				model;
-	private final Map<ProgressDisplay, Story>	rows				= new HashMap<>();
+	private final Map<ProgressDisplay, Story>	rows				= new HashMap<ProgressDisplay, Story>();
 	private final AtomicBoolean					repainting			= new AtomicBoolean(false);
 	
 	public DownloadList(final DownloadManager manager, final JMenuItem... additionalItems) {

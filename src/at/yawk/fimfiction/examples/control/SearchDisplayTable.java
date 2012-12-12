@@ -6,7 +6,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,8 +26,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-
-import org.json.JSONException;
 
 import at.yawk.fimfiction.IFimFictionConnection;
 import at.yawk.fimfiction.Searches;
@@ -126,7 +123,7 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 				while(model.getRowCount() > 0)
 					model.removeRow(0);
 				final Iterator<Story> stories = Searches.parseFullSearchPartially(request, connection, 0);
-				final Set<Story> allStories = new HashSet<>(SearchDisplayTable.this.stories.size() == 0 ? 16 : SearchDisplayTable.this.stories.size());
+				final Set<Story> allStories = new HashSet<Story>(SearchDisplayTable.this.stories.size() == 0 ? 16 : SearchDisplayTable.this.stories.size());
 				while(stories.hasNext()) {
 					while(waiting || waitingScrolling)
 						try {
@@ -138,7 +135,7 @@ public class SearchDisplayTable extends JPanel implements ISelectionNotify {
 					if(!SearchDisplayTable.this.stories.contains(s)) {
 						try {
 							Stories.updateStory(s, connection);
-						} catch(IOException | JSONException e) {
+						} catch(Exception e) {
 							e.printStackTrace();
 						}
 						SearchDisplayTable.this.stories.add(s);

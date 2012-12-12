@@ -25,15 +25,13 @@ public enum EnumStoryMatureCategories {
 	}
 	
 	public static EnumStoryMatureCategories parse(final String s) {
-		switch(s) {
-		case "all":
+		final int t = s.toLowerCase().hashCode();
+		if(t == "all".hashCode())
 			return ALL;
-		case "sex":
+		if(t == "sex".hashCode())
 			return SEX;
-		case "gore":
+		if(t == "gore".hashCode())
 			return GORE;
-		default:
-			return null;
-		}
+		return null;
 	}
 }

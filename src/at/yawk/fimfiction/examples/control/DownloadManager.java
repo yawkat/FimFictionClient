@@ -19,8 +19,8 @@ public class DownloadManager {
 	private final Executor						downloader		= Executors.newFixedThreadPool(5);
 	private EnumDownloadType					downloadType	= EnumDownloadType.EPUB;
 	private File								downloadDir		= new File("downloads");
-	private final Collection<IDownloadListener>	listeners		= new HashSet<>();
-	private final Map<String, Story>				stories			= new HashMap<>();
+	private final Collection<IDownloadListener>	listeners		= new HashSet<IDownloadListener>();
+	private final Map<String, Story>			stories			= new HashMap<String, Story>();
 	
 	public void setDownloadDirectory(final File dir) {
 		this.downloadDir = dir;
@@ -32,7 +32,7 @@ public class DownloadManager {
 	
 	public void download(final Story story, final IFimFictionConnection ffc, final EnumDownloadType downloadType) {
 		final File dir = downloadDir;
-		final Collection<IDownloadUpdate> listeners = new HashSet<>();
+		final Collection<IDownloadUpdate> listeners = new HashSet<IDownloadUpdate>();
 		for(final IDownloadListener dl : this.listeners)
 			if(dl != null) {
 				final IDownloadUpdate du = dl.getDownloadUpdate(story);
@@ -66,7 +66,7 @@ public class DownloadManager {
 	
 	public void downloadImmediatly(final Story story, final IFimFictionConnection ffc, final EnumDownloadType downloadType) {
 		final File dir = downloadDir;
-		final Collection<IDownloadUpdate> listeners = new HashSet<>();
+		final Collection<IDownloadUpdate> listeners = new HashSet<IDownloadUpdate>();
 		for(final IDownloadListener dl : this.listeners)
 			if(dl != null) {
 				final IDownloadUpdate du = dl.getDownloadUpdate(story);

@@ -7,7 +7,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class SearchGui implements Runnable {
 	public static void main(String[] args) {
@@ -18,7 +17,7 @@ public class SearchGui implements Runnable {
 	public void run() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		

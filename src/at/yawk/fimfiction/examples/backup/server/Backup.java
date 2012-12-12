@@ -32,7 +32,7 @@ import at.yawk.fimfiction.XMLHelper;
 
 public class Backup implements Runnable {
 	private final ReadWriteLock		modifyTimesLock	= new ReentrantReadWriteLock();
-	private final IntHashMap<Long>	modifyTimes		= new IntHashMap<>();
+	private final IntHashMap<Long>	modifyTimes		= new IntHashMap<Long>();
 	private final AtomicInteger		maximumStoryId	= new AtomicInteger(0);
 	
 	/**

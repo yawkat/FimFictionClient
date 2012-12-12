@@ -165,7 +165,7 @@ public class Story {
 	}
 	
 	public int hashCode() {
-		final Collection<Integer> c = new ArrayList<>();
+		final Collection<Integer> c = new ArrayList<Integer>();
 		nullSavePutHashCode(c, id);
 		nullSavePutHashCode(c, author);
 		nullSavePutHashCode(c, title);
