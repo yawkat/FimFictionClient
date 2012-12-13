@@ -3,6 +3,7 @@ package at.yawk.util.httpserver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -13,6 +14,10 @@ public class SunHttpServer implements IHttpServer {
 	
 	public SunHttpServer(HttpServer server) {
 		this.httpserver = server;
+	}
+	
+	public SunHttpServer(InetSocketAddress address) throws IOException {
+		this(HttpServer.create(address, 0));
 	}
 
 	@Override
