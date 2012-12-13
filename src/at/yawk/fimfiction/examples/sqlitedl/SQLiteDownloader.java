@@ -213,7 +213,7 @@ public class SQLiteDownloader implements Runnable {
 	private void continueUpdateStories() {
 		final int maxId = Searches.parseFullSearchPartially(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setSearchOrder(EnumSearchOrder.FIRST_POSTED_DATE), connection, 0).next().getId() + 1000;
 		
-		final Executor ex = Executors.newFixedThreadPool(4);
+		final Executor ex = Executors.newFixedThreadPool(1);
 		final AtomicInteger ai = new AtomicInteger();
 		for(int i = maxId; i > 0; i--) {
 			final int index = i;

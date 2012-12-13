@@ -28,9 +28,9 @@ public class SocketHttpServer implements IHttpServer {
 					try {
 						final Socket s = socket.accept();
 						if(listen) {
-							readUntil(s.getInputStream(), ' ');
-							final String uri = new String(readUntil(s.getInputStream(), ' '));
-							while(readUntil(s.getInputStream(), '\n').length > 1)
+							readUntil(s.getInputStream(), ' ', 8);
+							final String uri = new String(readUntil(s.getInputStream(), ' ', 40));
+							while(readUntil(s.getInputStream(), '\n', 200).length > 1)
 								;
 							final IHttpExchange i = new IHttpExchange() {
 								@Override
@@ -90,6 +90,8 @@ public class SocketHttpServer implements IHttpServer {
 									break;
 								}
 							}
+							if(!s.isClosed())
+								s.close();
 						}
 					} catch(IOException e) {
 						e.printStackTrace();
@@ -115,10 +117,10 @@ public class SocketHttpServer implements IHttpServer {
 		listen = false;
 	}
 	
-	private byte[] readUntil(InputStream is, char c) throws IOException {
+	private byte[] readUntil(InputStream is, char c, int j) throws IOException {
 		final ByteArrayOutputStream s = new ByteArrayOutputStream();
 		int i;
-		while((i = is.read()) != c)
+		while((i = is.read()) != c && j-- > 0)
 			s.write(i);
 		return s.toByteArray();
 	}
