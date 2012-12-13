@@ -18,7 +18,6 @@ public class SunHttpServer implements IHttpServer {
 	@Override
 	public void createContext(String string, final IHttpHandler httpHandler) {
 		httpserver.createContext(string, new HttpHandler() {
-			
 			@Override
 			public void handle(final HttpExchange arg0) throws IOException {
 				httpHandler.handle(new IHttpExchange() {
@@ -54,13 +53,11 @@ public class SunHttpServer implements IHttpServer {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		httpserver.start();
 	}
 
 	@Override
 	public void stop(int i) {
-		// TODO Auto-generated method stub
-		
+		httpserver.stop(i);
 	}
 }

@@ -73,13 +73,7 @@ public class SQLiteDownloader implements Runnable {
 		} catch(SQLException e1) {
 			e1.printStackTrace();
 		}
-		//continueUpdateStories();
-		try {
-			//dumpDatabase(true, new FileOutputStream("db.dmp"));
-			loadFiles(new FileInputStream("db.dmp"));
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		continueUpdateStories();
 		
 		System.out.println("Stopping");
 		System.exit(0);
