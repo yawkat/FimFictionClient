@@ -87,12 +87,11 @@ public class ToKindleServer {
 						Stories.downloadStory(s, new FileOutputStream(inputFile), EnumDownloadType.EPUB, new FimFictionConnectionStandard());
 						
 						System.out.println("Converting to .MOBI using ebook-convert...");
-						final Process p;
+						Process p = null;
 						try {
-							p = Runtime.getRuntime().exec("ebook-convert \"" + inputFile.getAbsolutePath() + "\" \"" + outputFile.getAbsolutePath() + "\"");
+							p = Runtime.getRuntime().exec("ebook-convert " + inputFile.getAbsolutePath() + " " + outputFile.getAbsolutePath());
 						} catch(IOException ioe) {
 							System.out.println("ebook-convert could not be found (Is calibre installed?)");
-							return;
 						}
 						p.waitFor();
 						
@@ -220,5 +219,6 @@ public class ToKindleServer {
 			}
 		});
 		server.start();
+		System.out.println("Ready.");
 	}
 }
