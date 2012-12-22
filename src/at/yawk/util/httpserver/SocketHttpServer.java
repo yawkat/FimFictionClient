@@ -29,7 +29,7 @@ public class SocketHttpServer implements IHttpServer {
 						final Socket s = socket.accept();
 						if(listen) {
 							readUntil(s.getInputStream(), ' ', 8);
-							final String uri = new String(readUntil(s.getInputStream(), ' ', 40));
+							final String uri = new String(readUntil(s.getInputStream(), ' ', 200));
 							while(readUntil(s.getInputStream(), '\n', 200).length > 1)
 								;
 							final IHttpExchange i = new IHttpExchange() {

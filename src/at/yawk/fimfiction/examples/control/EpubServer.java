@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -33,9 +35,9 @@ public class EpubServer {
 			hs.createContext("/", new IHttpHandler() {
 				@Override
 				public void handle(IHttpExchange arg0) throws IOException {
-					String loc = arg0.getRequestURI().toString().substring(1);
-					loc = loc.substring(0, loc.indexOf('/')).replace("%20", " ");
-					final File f = new File(dlManager.getDownloadDirectory(), loc);
+					System.out.println(arg0.getRequestURI().toString());
+					String loc = URLDecoder.decode(arg0.getRequestURI().toString().substring(1), "UTF-8");
+					final File f = new File(dlManager.getDownloadDirectory(), loc.substring(0, loc.indexOf('/')));
 					if(!f.exists())
 						arg0.sendResponseHeaders(404, -1);
 					else {
