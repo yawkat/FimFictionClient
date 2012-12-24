@@ -42,17 +42,17 @@ package org.apache.commons.lang;
 
 @SuppressWarnings("unchecked")
 public class IntHashMap<V> {
-	
+
 	/**
 	 * The hash table data.
 	 */
 	private transient Entry<V>	table[];
-	
+
 	/**
 	 * The total number of entries in the hash table.
 	 */
 	private transient int		count;
-	
+
 	/**
 	 * The table is rehashed when its size exceeds this threshold. (The value of
 	 * this field is (int)(capacity * loadFactor).)
@@ -60,14 +60,14 @@ public class IntHashMap<V> {
 	 * @serial
 	 */
 	private int					threshold;
-	
+
 	/**
 	 * The load factor for the hashtable.
 	 * 
 	 * @serial
 	 */
 	private final float			loadFactor;
-	
+
 	/**
 	 * <p>
 	 * Innerclass that acts as a datastructure to create a new entry in the
@@ -78,7 +78,7 @@ public class IntHashMap<V> {
 		final int	hash;
 		V			value;
 		Entry<V>	next;
-		
+
 		/**
 		 * <p>
 		 * Create a new entry with the given values.
@@ -99,7 +99,7 @@ public class IntHashMap<V> {
 			this.next = next;
 		}
 	}
-	
+
 	/**
 	 * <p>
 	 * Constructs a new, empty hashtable with a default capacity and load
@@ -109,7 +109,7 @@ public class IntHashMap<V> {
 	public IntHashMap() {
 		this(20, 0.75f);
 	}
-	
+
 	/**
 	 * <p>
 	 * Constructs a new, empty hashtable with the specified initial capacity and
@@ -124,7 +124,7 @@ public class IntHashMap<V> {
 	public IntHashMap(int initialCapacity) {
 		this(initialCapacity, 0.75f);
 	}
-	
+
 	/**
 	 * <p>
 	 * Constructs a new, empty hashtable with the specified initial capacity and
@@ -150,12 +150,12 @@ public class IntHashMap<V> {
 		if(initialCapacity == 0) {
 			initialCapacity = 1;
 		}
-		
+
 		this.loadFactor = loadFactor;
 		table = new Entry[initialCapacity];
 		threshold = (int)(initialCapacity * loadFactor);
 	}
-	
+
 	/**
 	 * <p>
 	 * Returns the number of keys in this hashtable.
@@ -166,7 +166,7 @@ public class IntHashMap<V> {
 	public int size() {
 		return count;
 	}
-	
+
 	/**
 	 * <p>
 	 * Tests if this hashtable maps no keys to values.
@@ -178,7 +178,7 @@ public class IntHashMap<V> {
 	public boolean isEmpty() {
 		return count == 0;
 	}
-	
+
 	/**
 	 * <p>
 	 * Tests if some key maps into the specified value in this hashtable. This
@@ -205,7 +205,7 @@ public class IntHashMap<V> {
 		if(value == null) {
 			throw new NullPointerException();
 		}
-		
+
 		Entry<V> tab[] = table;
 		for(int i = tab.length; i-- > 0;) {
 			for(Entry<V> e = tab[i]; e != null; e = e.next) {
@@ -216,7 +216,7 @@ public class IntHashMap<V> {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * <p>
 	 * Returns <code>true</code> if this HashMap maps one or more keys to this
@@ -237,7 +237,7 @@ public class IntHashMap<V> {
 	public boolean containsValue(V value) {
 		return contains(value);
 	}
-	
+
 	/**
 	 * <p>
 	 * Tests if the specified object is a key in this hashtable.
@@ -261,7 +261,7 @@ public class IntHashMap<V> {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * <p>
 	 * Returns the value to which the specified key is mapped in this map.
@@ -285,7 +285,7 @@ public class IntHashMap<V> {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * <p>
 	 * Increases the capacity of and internally reorganizes this hashtable, in
@@ -300,25 +300,25 @@ public class IntHashMap<V> {
 	protected void rehash() {
 		int oldCapacity = table.length;
 		Entry<V> oldMap[] = table;
-		
+
 		int newCapacity = oldCapacity * 2 + 1;
 		Entry<V> newMap[] = new Entry[newCapacity];
-		
+
 		threshold = (int)(newCapacity * loadFactor);
 		table = newMap;
-		
+
 		for(int i = oldCapacity; i-- > 0;) {
 			for(Entry<V> old = oldMap[i]; old != null;) {
 				Entry<V> e = old;
 				old = old.next;
-				
+
 				int index = (e.hash & 0x7FFFFFFF) % newCapacity;
 				e.next = newMap[index];
 				newMap[index] = e;
 			}
 		}
 	}
-	
+
 	/**
 	 * <p>
 	 * Maps the specified <code>key</code> to the specified <code>value</code>
@@ -351,22 +351,22 @@ public class IntHashMap<V> {
 				return old;
 			}
 		}
-		
+
 		if(count >= threshold) {
 			// Rehash the table if the threshold is exceeded
 			rehash();
-			
+
 			tab = table;
 			index = (hash & 0x7FFFFFFF) % tab.length;
 		}
-		
+
 		// Creates the new entry.
 		Entry<V> e = new Entry<V>(hash, value, tab[index]);
 		tab[index] = e;
 		count++;
 		return null;
 	}
-	
+
 	/**
 	 * <p>
 	 * Removes the key (and its corresponding value) from this hashtable.
@@ -400,7 +400,7 @@ public class IntHashMap<V> {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * <p>
 	 * Clears this hashtable so that it contains no keys.
@@ -413,5 +413,5 @@ public class IntHashMap<V> {
 		}
 		count = 0;
 	}
-	
+
 }
