@@ -3,6 +3,9 @@ downloads/
 output/
 config.txt
 lib/
+favorites/
+readlater/
+unread/
 data/
 all.log
 stories.xml
