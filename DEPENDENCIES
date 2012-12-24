@@ -5,3 +5,4 @@ javamail 1.4.5
 apache commons (lang3) 3.1
 sqlite-jdbc 3.7.2
 JSON-java (https://github.com/douglascrockford/JSON-java)
+kefir-bb (http://kefir-bb.sourceforge.net/)
