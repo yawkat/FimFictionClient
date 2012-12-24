@@ -1,5 +1,7 @@
 stories/
 downloads/
+output/
+config.txt
 lib/
 data/
 all.log
