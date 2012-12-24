@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,13 +19,40 @@ public class LoginScreen extends JPanel {
 	private static final long	serialVersionUID	= 1L;
 	
 	public LoginScreen(final FimFictionConnectionAccount connection, final Runnable onLogin) {
+		final JTextField username = new JTextField();
+		final JPasswordField password = new JPasswordField();
+		final JButton login = new JButton();
+		final AtomicBoolean isShowingGreyUsername = new AtomicBoolean(false);
+		final AtomicBoolean isShowingGreyPassword = new AtomicBoolean(false);
+		final Action loginAction = new AbstractAction() {
+			private static final long	serialVersionUID	= 1L;
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				login.setEnabled(false);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						if(!isShowingGreyUsername.get() && !isShowingGreyPassword.get()) {
+							if(connection.login(username.getText(), new String(password.getPassword()))) {
+								onLogin.run();
+							} else {
+								login.setEnabled(true);
+								JOptionPane.showMessageDialog(LoginScreen.this, "Bad Login");
+							}
+						} else {
+							login.setEnabled(true);
+							JOptionPane.showMessageDialog(LoginScreen.this, "Missing information");
+						}
+					}
+				}).start();
+			}
+		};
+		
 		final GridLayout gl = new GridLayout(3, 1);
 		gl.setVgap(2);
 		setLayout(gl);
-		final JTextField username;
-		final AtomicBoolean isShowingGreyUsername = new AtomicBoolean(false);
 		{
-			username = new JTextField();
 			if(!username.hasFocus()) {
 				username.setText("username");
 				username.setForeground(Color.GRAY);
@@ -53,12 +81,10 @@ public class LoginScreen extends JPanel {
 			});
 			username.setColumns(20);
 			username.setVisible(true);
+			username.setAction(loginAction);
 			add(username);
 		}
-		final JPasswordField password;
-		final AtomicBoolean isShowingGreyPassword = new AtomicBoolean(false);
 		{
-			password = new JPasswordField();
 			if(!password.hasFocus()) {
 				password.setText("password");
 				password.setForeground(Color.GRAY);
@@ -87,34 +113,11 @@ public class LoginScreen extends JPanel {
 			});
 			password.setColumns(20);
 			password.setVisible(true);
+			password.setAction(loginAction);
 			add(password);
 		}
 		{
-			final JButton login = new JButton();
-			login.setAction(new AbstractAction() {
-				private static final long	serialVersionUID	= 1L;
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					login.setEnabled(false);
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							if(!isShowingGreyUsername.get() && !isShowingGreyPassword.get()) {
-								if(connection.login(username.getText(), new String(password.getPassword()))) {
-									onLogin.run();
-								} else {
-									login.setEnabled(true);
-									JOptionPane.showMessageDialog(LoginScreen.this, "Bad Login");
-								}
-							} else {
-								login.setEnabled(true);
-								JOptionPane.showMessageDialog(LoginScreen.this, "Missing information");
-							}
-						}
-					}).start();
-				}
-			});
+			login.setAction(loginAction);
 			login.setText("Login");
 			login.setVisible(true);
 			add(login);
