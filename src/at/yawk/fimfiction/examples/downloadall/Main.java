@@ -38,7 +38,7 @@ public class Main {
 					public void run() {
 						System.out.println("Checking unread favorites...");
 						try {
-							favorites.addAll(Arrays.asList(Searches.parseFullSearch(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), account)));
+							unread.addAll(Arrays.asList(Searches.parseFullSearch(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeFavorite(true).setMustBeUnread(true).getRequest(), account)));
 						} catch(IOException e) {
 							e.printStackTrace();
 						} finally {
@@ -51,7 +51,7 @@ public class Main {
 					public void run() {
 						System.out.println("Checking read later...");
 						try {
-							favorites.addAll(Arrays.asList(Searches.parseFullSearch(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), account)));
+							readlater.addAll(Arrays.asList(Searches.parseFullSearch(Util.FIMFICTION + "index.php?" + new SearchRequestBuilder().setMustBeReadLater(true).getRequest(), account)));
 						} catch(IOException e) {
 							e.printStackTrace();
 						} finally {
