@@ -121,6 +121,14 @@ public class ConsoleSearch {
 										Thread.sleep(200L);
 									pw.println(is);
 									pw.println("Title: " + s.s.getTitle());
+									pw.print("Characters: ");
+									final EnumCharacter[] c = Stories.getCharacters(s.s, new FimFictionConnectionStandard());
+									for(int i = 0; i < c.length; i++) {
+										if(i != 0)
+											pw.print(", ");
+										pw.print(c[i].toString());
+									}
+									pw.println();
 									pw.println("SDescription: " + s.s.getShortDescription().replace("\n", "").replace("\r", ""));
 									pw.flush();
 									pw.println();
