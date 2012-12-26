@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import at.yawk.fimfiction.examples.control.IDownloadUpdate;
 
@@ -89,5 +91,15 @@ public final class Stories {
 		} else {
 			return false;
 		}
+	}
+	
+	public static EnumCharacter[] getCharacters(final Story s, IFimFictionConnection ffc) throws MalformedURLException, IOException {
+		final Document d = Util.getHTML(ffc.getConnection(new URL(Util.FIMFICTION + "story/" + s.getId())));
+		final Elements es = d.getElementsByClass("character_icon");
+		final EnumCharacter[] characters = new EnumCharacter[es.size() / 2];
+		for(int i = 1; i < es.size(); i += 2) {
+			characters[i / 2] = EnumCharacter.parseImageUrl("http:" + es.get(i).attr("src"));
+		}
+		return characters;
 	}
 }
