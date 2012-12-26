@@ -126,7 +126,7 @@ public class ConsoleSearch {
 									for(int i = 0; i < c.length; i++) {
 										if(i != 0)
 											pw.print(", ");
-										pw.print(c[i].toString());
+										pw.print(c[i]);
 									}
 									pw.println();
 									pw.println("SDescription: " + s.s.getShortDescription().replace("\n", "").replace("\r", ""));
