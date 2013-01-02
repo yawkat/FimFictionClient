@@ -11,3 +11,5 @@ This is a simple java interface for FimFiction.net. Features:
 - Search URL building
 
 It also contains various example applications I made for personal use, the biggest one being a fully-featured java GUI for fimfiction.net that can search, view favorites, view read later, contains a simple HTTP server for reading epubs in the browser and much more.
+
+NOTE: THIS PROJECT IS ON HIATUS AND HAS BEEN RECODED AT https://github.com/yawkat/FimFictionAPI
