@@ -1,3 +1,6 @@
+Note: This library is deprecated and is no longer supported. Use the faster FimFiction-Java (https://github.com/yawkat/FimFiction-Java) instead.
+
+
 This is a simple java interface for FimFiction.net. Features:
 
 - Account logging in
